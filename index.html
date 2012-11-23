@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Bluz Skeleton : Bluz skeleton application" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Bluz Skeleton</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/bluzphp/skeleton">View on GitHub</a>
+
+          <h1 id="project_title">Bluz Skeleton</h1>
+          <h2 id="project_tagline">Bluz skeleton application</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/bluzphp/skeleton/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/bluzphp/skeleton/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Bluz, a lightweight PHP Framework</h1>
+
+<p>Easy to setup, easy to use.</p>
+
+<h2>Installation</h2>
+
+<p>Bluz works with PHP 5.4 or later and MySQL 5.1 or later</p>
+
+<p>First you should clone Bluz skeleton project from github repository</p>
+
+<pre><code>git clone git://github.com/bluzphp/skeleton.git
+</code></pre>
+
+<p>Then you need to download composer.phar</p>
+
+<pre><code>curl -s https://getcomposer.org/installer | php
+</code></pre>
+
+<p>After that, you need to install all the necessary project dependencies by this command:</p>
+
+<pre><code>php composer.phar install
+</code></pre>
+
+<p>Requried FollowSymlinks option. Create symlink to public directory:</p>
+
+<pre><code>ln -s /path/to/public /var/www/htdocs
+</code></pre>
+
+<p>Restore database structure from <code>structure.ddl</code> file.
+Restore default database data from <code>dump.sql</code></p>
+
+<p>Edit your own configuration file <code>/path/to/application/configs/app.dev.php</code></p>
+
+<h2>Usage</h2>
+
+<p>Controller:</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="k">return</span>
+<span class="sd">/**</span>
+<span class="sd"> * @privilege View-User-Profile</span>
+<span class="sd"> * @cache 5 minutes</span>
+<span class="sd"> * @param integer $id</span>
+<span class="sd"> * @return \closure</span>
+<span class="sd"> */</span>
+<span class="k">function</span><span class="p">(</span><span class="nv">$id</span><span class="p">)</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$view</span><span class="p">)</span> <span class="p">{</span>
+    <span class="sd">/**</span>
+<span class="sd">     * @var Application $this</span>
+<span class="sd">     * @var View $view</span>
+<span class="sd">     */</span>
+     <span class="nv">$view</span><span class="o">-&gt;</span><span class="na">user</span> <span class="o">=</span> <span class="nx">Users\Table</span><span class="o">::</span><span class="na">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">findRow</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>View:</p>
+
+<div class="highlight"><pre><span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;&lt;?=</span><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">login</span><span class="cp">?&gt;</span><span class="x">&lt;/h2&gt;</span>
+</pre></div>
+
+<p>Model:</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="k">namespace</span> <span class="nx">Application\Users</span><span class="p">;</span>
+<span class="k">class</span> <span class="nc">Table</span> <span class="k">extends</span> <span class="nx">\Bluz\Db\Table</span>
+<span class="p">{</span>
+    <span class="k">protected</span> <span class="nv">$table</span> <span class="o">=</span> <span class="s1">'users'</span><span class="p">;</span>
+    <span class="k">protected</span> <span class="nv">$primary</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+<span class="k">namespace</span> <span class="nx">Application\Users</span><span class="p">;</span>
+<span class="k">class</span> <span class="nc">Row</span> <span class="k">extends</span> <span class="nx">\Bluz\Db\Row</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nv">$id</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$login</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>License</h2>
+
+<p>Read LICENSE file</p>
+
+<h2>Contributors</h2>
+
+<ul>
+<li>
+<a href="https://github.com/AntonShevchuk">Anton Shevchuk</a> </li>
+<li>
+<a href="https://github.com/Baziak">Eugene Zabolotniy</a> </li>
+<li>
+<a href="https://github.com/MaksSlesarenko">Maks Slesarenko</a> </li>
+<li><a href="https://github.com/EagleMoor">EagleMoor</a></li>
+</ul><h2>Vendors</h2>
+
+<ul>
+<li>jQuery - <a href="https://github.com/jquery/jquery">https://github.com/jquery/jquery</a>
+</li>
+<li>Bootstrap - <a href="http://twitter.github.com/bootstrap/javascript.html">http://twitter.github.com/bootstrap/javascript.html</a>
+</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Bluz Skeleton maintained by <a href="https://github.com/bluzphp">bluzphp</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
