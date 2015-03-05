@@ -8,6 +8,8 @@ define(['jquery', 'backbone', 'parse', 'bluz.notify', 'json2', 'bootstrap'], fun
 
     //FETCHING ALL USERS
     fetchUsers();
+    //UPDATING CURRENT USER
+    updateCurrentUser();
 
     function fetchUsers() {
         if ($('.grid>table>thead>tr>th').length) {
@@ -112,25 +114,73 @@ define(['jquery', 'backbone', 'parse', 'bluz.notify', 'json2', 'bootstrap'], fun
                         $(element).find('div.form-group>input.value').val('');
                     });
                     fetchUsers();
+                    updateCurrentUser();
                     notify.addSuccess('User ' + username + ' is successfully created');
                 },
                 error: function(user, error) {
-                    // Show the error message somewhere and let the user try again.
                     notify.addError("Error: " + error.code + " " + error.message);
                 }
             });
         }
     });
 
-    body.on('click', 'button.edit-user', function () {
+    body.on('click', 'button.login-user', function () {
+        var currentUser = Parse.User.current();
+        if (currentUser) {
+            notify.addError('You are already logged in!');
+        } else {
+            notify.addError('Not implemented yet!');
+        }
+    });
 
+    body.on('click', 'button.login-user-submit', function () {
+        login(username, password);
+    });
+
+    body.on('click', 'button.edit-user', function () {
+        var currentUser = Parse.User.current();
+        if (currentUser) {
+            notify.addError('Not implemented yet');
+        } else {
+            notify.addError('Only user can edit himself. Log in!');
+        }
     });
 
     body.on('click', 'button.acl-user', function () {
-
+        notify.addError('Not implemented yet');
     });
 
     body.on('click', 'button.delete-user', function () {
-
+        var currentUser = Parse.User.current();
+        if (currentUser) {
+            notify.addError('Not implemented yet');
+        } else {
+            notify.addError('Only user can delete himself. Log in!'); //TODO: investigate how ACL works
+        }
     });
+
+    function login (username, password) {
+        Parse.User.logIn(username, password, {
+            success: function(user) {
+                updateCurrentUser();
+                notify.addSuccess('You have successfully logged in!');
+            },
+            error: function(user, error) {
+                notify.addError('Authentication failed! Message: ' + error.message);
+            }
+        });
+    }
+
+    function logout () {
+        Parse.User.logOut();
+    }
+
+    function updateCurrentUser() {
+        var currentUser = Parse.User.current();
+        if (currentUser) {
+            $('.current-user').text(currentUser.attributes.username);
+        } else {
+            notify.addError('Update failed! You are not logged in!'); //TODO: investigate how ACL works
+        }
+    }
 });

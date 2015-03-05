@@ -5,3 +5,7 @@
 th.blank {
     width: 200px;
 }
+
+.current-user {
+    color: lightgreen;
+}
