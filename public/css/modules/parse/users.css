@@ -1,0 +1,7 @@
+.create-user-form, .add-fields-form {
+    display: none;
+}
+
+th.blank {
+    width: 200px;
+}
