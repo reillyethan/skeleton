@@ -23,6 +23,6 @@ return
         Layout::setTemplate('dashboard.phtml');
         Layout::breadCrumbs([
             $view->ahref('Dashboard', ['dashboard', 'index']),
-            __('ACL')
+            __('Parse Users')
         ]);
     };

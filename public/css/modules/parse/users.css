@@ -1,9 +1,9 @@
-.create-user-form, .add-fields-form {
+.create-user-form, .add-fields-form, .popover-login {
     display: none;
 }
 
 th.blank {
-    width: 200px;
+    width: 10%;
 }
 
 .current-user {
