@@ -1,0 +1,45 @@
+<div class="modal fade modal-create">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Role name</label>
+                    <input class="form-control name" type="text" placeholder="name">
+                    <div class="specific-object">
+                        <h6>Specific objects</h6>
+                        <div class="fields">
+                            <label>Object ID</label>
+                            <input class="form-control objectId" type="text" placeholder="objectId">
+                            <label>Select rights for an object</label>
+                            <select class="form-control">
+                                <option value="">Read Access</option>
+                                <option>Write Access</option>
+                                <option>Both</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-warning btn-xs more">Add more</button>
+                        </div>
+                    </div>
+                    <div class="all-objects">
+                        <h6>All objects</h6>
+                        <label for="rights-all">Select rights for public</label>
+                        <select id="rights-all" class="form-control">
+                            <option>none</option>
+                            <option>read</option>
+                            <option>write</option>
+                            <option>both</option>
+                    </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="submit btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
