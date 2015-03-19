@@ -33,7 +33,7 @@ define([
             this.collection = new RoleCollection();
             this.collection.bind('add', this.appendRole);
             var parentRole = options.model;
-
+            
             var relation = parentRole.relation('roles');
             relation.query().find({
                 success: function (results) {
