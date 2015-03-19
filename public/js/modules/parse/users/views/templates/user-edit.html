@@ -1,0 +1,40 @@
+<div class="modal fade modal-edit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                <% _.each(keys, function(key, index) { if ('authData' == key) { %>
+                        <div><h5>Facebook Auth Data</h5></div>
+                        <label for="accessToken">Access Token</label>
+                        <input type="text" id="accessToken" class="form-control" value="<%= values[index].facebook.access_token %>"disabled>
+                        <label for="expirationDate">Expiration Date</label>
+                        <input type="text" id="expirationDate" class="form-control" value="<%= values[index].facebook.expiration_date %>"disabled>
+                        <label for="facebookId">Facebook Id</label>
+                        <input type="text" id="facebookId" class="form-control" value="<%= values[index].facebook.id %>"disabled>
+                <%  } else { %>
+                        <label for="<%= keys[index] %>"><%= keys[index] %></label>
+                        <input type="text" id="<%= keys[index] %>" class="<%= keys[index] %> form-control" value="<%= values[index] %>"/>
+                <%  }}); %>
+                    <div><h5>Facebook</h5></div>
+                    <div class="btn-group" id="facebook">
+                        <button type="button" class="btn btn-info fb-link">Link</button>
+                        <button type="button" class="btn btn-warning fb-unlink">Unlink</button>
+                    </div>
+                    <label for="customFieldsKey">Custom fields</label>
+                    <div class="btn-group-xs">
+                        <button type="button" class="more btn btn-warning btn-xs">Add more</button>
+                    </div>
+                    <input type="text" id="customFieldsKey" class="custom-fields-key form-control" placeholder="Key"/>
+                    <input type="text" id="customFieldsValue" class="custom-fields-value form-control" placeholder="Value"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="submit btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
