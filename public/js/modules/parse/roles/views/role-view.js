@@ -8,18 +8,23 @@ define([
     'bluz.notify',
     'text!modules/parse/roles/views/templates/role.html',
     'grid-child-roles-view',
+    'grid-child-users-view',
     'bootstrap',
     'json2'
-], function (Backbone, $, _, notify, Role, GridChildRolesView) {
+], function (Backbone, $, _, notify, Role, GridChildRolesView, GridChildUsersView) {
     Backbone.sync = function(method, model, success, error){
         success();
     }
+
+    var APP_ID = "v0J2mglwXn35AbQfBC4qyFoRPXvRkGLPvHkblaMe";
+    var REST_KEY = "FjGzHv8sQKjY9FH32Y4PFdEuwgFjWq03xm1i8Cc2";
 
     var RoleView = Backbone.View.extend({
         template: _.template(Role),
         events: {
             'click button.remove': 'remove',
-            'click button.showChildRoles': 'showChildRoles'
+            'click button.showChildRoles': 'showChildRoles',
+            'click button.showChildUsers': 'showChildUsers'
         },
         initialize: function(){
             _.bindAll(
@@ -43,32 +48,30 @@ define([
         },
         remove: function(){
             var self = this;
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                var sessiontoken = currentUser._sessionToken;
-                $.ajax({
-                    url: 'https://api.parse.com/1/roles/' + this.model.attributes.objectId,
-                    type: 'DELETE',
-                    headers: {
-                        'X-Parse-Application-Id': APP_ID,
-                        'X-Parse-REST-API-Key': REST_KEY,
-                        'X-Parse-Session-Token': sessiontoken
-                    },
-                    success: function (result) {
-                        self.model.destroy();
-                        notify.addSuccess('Role has been successfully deleted!');
-                    },
-                    error: function (xhr, status, error) {
-                        notify.addError('Error occured while deleting a user! Message: ' + xhr.responseText);
-                    }
-                });
-            } else {
-                notify.addNotice('Log in!');
-            }
+
+            $.ajax({
+                url: 'https://api.parse.com/1/roles/' + self.model.id,
+                type: 'DELETE',
+                headers: {
+                    'X-Parse-Application-Id': APP_ID,
+                    'X-Parse-REST-API-Key': REST_KEY
+                },
+                success: function (result) {
+                    self.model.destroy();
+                    notify.addSuccess('Role has been successfully deleted!');
+                },
+                error: function (xhr, status, error) {
+                    notify.addError('Error occured while deleting a user! Message: ' + xhr.responseText);
+                }
+            });
         },
         showChildRoles: function () {
             var gridChildRolesView = new GridChildRolesView({'model': this.model, 'el': 'div.col-lg-9'});
             gridChildRolesView.render();
+        },
+        showChildUsers: function () {
+            var gridChildUsersView = new GridChildUsersView({'model': this.model, 'el': 'div.col-lg-9'});
+            gridChildUsersView.render();
         }
     });
 

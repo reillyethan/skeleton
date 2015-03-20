@@ -36,12 +36,7 @@ define([
             var query = new Parse.Query(Parse.Role).find({
                 success: function (results) {
                     for (i in results) {
-                        //console.log(results[i]);
-                        var role = results[i].attributes;
-                        role['objectId'] = results[i].id;
-                        role['createdAt'] = results[i].createdAt;
-                        role['updatedAt'] = results[i].updatedAt;
-                        self.collection.add(role);
+                        self.collection.add(results[i]);
                     }
                 },
                 error: function (error) {

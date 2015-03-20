@@ -34,7 +34,11 @@ require.config({
         "role-collection": './modules/parse/roles/collections/role-collection',
         "role-create-view": './modules/parse/roles/views/role-create-view',
         "grid-child-roles-view": './modules/parse/roles/views/grid-child-roles-view',
-        "child-role-view": './modules/parse/roles/views/child-role-view'
+        "child-role-view": './modules/parse/roles/views/child-role-view',
+        "grid-child-users-view": './modules/parse/roles/views/grid-child-users-view',
+        "child-user-view": './modules/parse/roles/views/child-user-view',
+        "child-user-add-view": './modules/parse/roles/views/child-user-add-view',
+        "child-role-add-view": './modules/parse/roles/views/child-role-add-view'
     },
     shim: {
         "bootstrap": {
