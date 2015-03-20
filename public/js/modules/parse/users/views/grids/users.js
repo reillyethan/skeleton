@@ -7,18 +7,14 @@ define([
     'parse',
     'bluz.notify',
     'underscore',
-    'user-view',
-    'user-collection',
-    'user-create-view',
+    'modules/parse/users/views/grids/elements/user',
+    'modules/parse/users/collections/user',
+    'modules/parse/users/views/forms/add-user',
     'text!modules/parse/users/views/templates/grid.html',
     'json2',
     'bootstrap'
 ], function ($, Backbone, Parse, notify, _, UserView, UserCollection, UserCreateView, GridTemplate) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
-    var GridView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(GridTemplate),
         events: {
             'click button.fb-login': 'fbLogin',
@@ -128,6 +124,4 @@ define([
             }
         }
     });
-
-    return GridView;
 });

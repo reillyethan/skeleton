@@ -7,15 +7,11 @@ define([
     'jquery',
     'underscore',
     'bluz.notify',
-    'text!modules/parse/roles/views/templates/child-role-add-view.html',
+    'text!modules/parse/roles/views/templates/add-child-role.html',
     'bootstrap',
     'json2'
 ], function (Backbone, Parse, $, _, notify, ChildRoleAddTemplate) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
-    var ChildRoleAddView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(ChildRoleAddTemplate),
         events: {
             'click button.submit': 'submitCreate',
@@ -59,6 +55,4 @@ define([
             });
         }
     });
-
-    return ChildRoleAddView;
 });

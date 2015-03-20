@@ -7,40 +7,35 @@ define([
     'parse',
     'bluz.notify',
     'underscore',
-    'child-role-view',
-    'role-collection',
-    'text!modules/parse/roles/views/templates/grid-child-roles.html',
-    'child-role-add-view',
+    'modules/parse/roles/views/grids/elements/child-user',
+    'modules/parse/roles/collections/role',
+    'text!modules/parse/roles/views/templates/grid-child-users.html',
+    'modules/parse/roles/views/forms/add-child-user',
     'json2',
     'bootstrap'
-], function ($, Backbone, Parse, notify, _, ChildRoleView, RoleCollection, GridChildRolesTemplate, ChildRoleAddView) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-    var GridChildRolesView = Backbone.View.extend({
-        template: _.template(GridChildRolesTemplate),
+], function ($, Backbone, Parse, notify, _, ChildUserView, RoleCollection, GridChildUsersTemplate, ChildUserAddView) {
+    return Backbone.View.extend({
+        template: _.template(GridChildUsersTemplate),
         events: {
             'hide.bs.modal': 'unrender',
-            'click button.addChildRole': 'addChildRole'
+            'click button.addChildUser': 'addChildUser'
         },
         initialize: function(options){
-            console.log('Wake up, Neo');
             _.bindAll(
                 this,
                 'render',
                 'unrender',
-                'appendRole',
-                'addChildRole'
+                'appendUser'
             );
             var self = this;
             this.collection = new RoleCollection();
-            this.collection.bind('add', this.appendRole);
+            this.collection.bind('add', this.appendUser);
             this.parentRole = options.model;
 
             var query = new Parse.Query(Parse.Role).equalTo('name', options.model.attributes.name).find({
                 success: function(result) {
                     var parentRole = result[0];
-                    parentRole.getRoles().query().find({
+                    parentRole.getUsers().query().find({
                         success: function (results) {
                             for (i in results) {
                                 self.collection.add(results[i]);
@@ -56,42 +51,40 @@ define([
         render: function () {
             this.$el.append(this.template());
             var self = this;
-            _(this.collection.models).each(function(role){
-                self.find('div.modal-child table > tbody').appendRole(role);
+            _(this.collection.models).each(function(user){
+                self.find('div.modal-child table > tbody').appendUser(user);
             }, this);
             this.$el.find('div.modal-child').modal('show');
         },
         unrender: function () {
             this.$el.find('div.modal-child').remove();
         },
-        appendRole: function (role) {
+        appendUser: function (user) {
             var self = this;
             var query = new Parse.Query(Parse.Role).equalTo('name', self.parentRole.attributes.name).find({
                 success: function(result) {
                     var parentRole = result[0];
-                    var query = new Parse.Query(Parse.Role).equalTo('name',role.attributes.name).find({
+                    var query = new Parse.Query(Parse.User).equalTo('username',user.attributes.username).find({
                         success: function (result) {
-                            self.$el.find('div.modal-child table > tbody').append('<tr class="' + result[0].attributes.name + '"></tr>');
-                            var childRoleView = new ChildRoleView({
+                            self.$el.find('div.modal-child table > tbody').append('<tr class="' + result[0].attributes.username + '"></tr>');
+                            var childUserView = new ChildUserView({
                                 parentRole: parentRole,
                                 model: result[0],
-                                el: self.$el.find('div.modal-child table > tbody > tr.' + result[0].attributes.name)
+                                el: self.$el.find('div.modal-child table > tbody > tr.' + result[0].attributes.username)
                             });
-                            childRoleView.render();
+                            childUserView.render();
                         }
                     });
                 }
             });
         },
-        addChildRole: function () {
-            var childRoleAddView = new ChildRoleAddView({
+        addChildUser: function () {
+            var childUserAddView = new ChildUserAddView({
                 'parentRole': this.parentRole,
                 'collection': this.collection,
                 'el': 'div.col-lg-9'
             });
-            childRoleAddView.render();
+            childUserAddView.render();
         }
     });
-
-    return GridChildRolesView;
 });

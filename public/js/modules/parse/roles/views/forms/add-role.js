@@ -7,17 +7,13 @@ define([
     'jquery',
     'underscore',
     'bluz.notify',
-    'text!modules/parse/roles/views/templates/role-create.html',
+    'text!modules/parse/roles/views/templates/add-role.html',
     'bootstrap',
     'json2'
 ], function (Backbone, Parse, $, _, notify, RoleCreateTemplate) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
     var moreFieldsCounter = 0;
 
-    var RoleCreateView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(RoleCreateTemplate),
         events: {
             'click button.submit': 'submitCreate',
@@ -75,7 +71,6 @@ define([
                         }
                     })
                 }
-                //TODO: get access rights from public input and set it if it exists
                 var publicOption = this.$el.find('div.all-objects select option:selected').text();
                 switch (publicOption) {
                     case 'write':
@@ -140,6 +135,4 @@ define([
             }
         }
     });
-
-    return RoleCreateView;
 });

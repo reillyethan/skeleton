@@ -1,7 +1,11 @@
 /**
  * Created by alexander on 3/17/15.
  */
-define(['backbone', 'parse', 'roles-grid-view'], function (Backbone, Parse, GridView) {
+define([
+    'backbone',
+    'parse',
+    'modules/parse/roles/views/grids/roles'
+], function (Backbone, Parse, GridView) {
     var APP_ID = "v0J2mglwXn35AbQfBC4qyFoRPXvRkGLPvHkblaMe";
     var JAVASCRIPT_KEY = "F2Um4CQ8uyB52vuZe8TDHrGagXMyiM8zDgYajg20";
 

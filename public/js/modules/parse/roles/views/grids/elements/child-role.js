@@ -7,16 +7,20 @@ define([
     'underscore',
     'bluz.notify',
     'text!modules/parse/roles/views/templates/child-role.html',
-    'grid-child-roles-view',
-    'grid-child-users-view',
+    //'modules/parse/roles/views/grids/child-roles', //Optional?
+    //'modules/parse/roles/views/grids/child-users', //Optional?
     'bootstrap',
     'json2'
-], function (Backbone, $, _, notify, ChildRole, GridChildRolesView, GridChildUsersView) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
-    var ChildRoleView = Backbone.View.extend({
+], function (
+    Backbone,
+    $,
+    _,
+    notify,
+    ChildRole
+    //ChildRolesView,
+    //GridChildUsersView
+    ) {
+    return Backbone.View.extend({
         template: _.template(ChildRole),
         events: {
             'click button.remove': 'remove',
@@ -31,6 +35,7 @@ define([
                 'remove',
                 'showChildRoles'
             );
+            //this.vent = options.vent;
             this.parentRole = options.parentRole;
             this.model.bind('remove', this.unrender);
         },
@@ -61,26 +66,14 @@ define([
             });
         },
         showChildRoles: function () {
-            //var self = this;
-            //var query = new Parse.Query(Parse.Role).equalTo('name', self.model.attributes.name).find({
-            //    success: function (result) {
-            //        var gridChildRolesView = new GridChildRolesView({'model': result[0], 'el': 'div.col-lg-9'});
-                    var gridChildRolesView = new GridChildRolesView({'model': this.model, 'el': 'div.col-lg-9'});
-                    gridChildRolesView.render();
-            //    }
-            //});
+            Backbone.pubSub.trigger('buttonShowChildRolesClicked', {'model': this.model, 'el': 'div.col-lg-9'});
+            //this.trigger('buttonShowChildRolesClicked', {'model': this.model, 'el': 'div.col-lg-9'});
+            //var gridChildRolesView = new GridChildRolesView({'model': this.model, 'el': 'div.col-lg-9'});
+            //gridChildRolesView.render();
         },
         showChildUsers: function () {
-            //var self = this;
-            //var query = new Parse.Query(Parse.Role).equalTo('name', self.model.attributes.name).find({
-            //    success: function (result) {
-            //        var gridChildUsersView = new GridChildUsersView({'model': result[0], 'el': 'div.col-lg-9'});
-                    var gridChildUsersView = new GridChildUsersView({'model': this.model, 'el': 'div.col-lg-9'});
-                    gridChildUsersView.render();
-            //    }
-            //});
+            var gridChildUsersView = new GridChildUsersView({'model': this.model, 'el': 'div.col-lg-9'});
+            gridChildUsersView.render();
         }
     });
-
-    return ChildRoleView;
 });

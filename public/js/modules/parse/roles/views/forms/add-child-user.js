@@ -7,15 +7,11 @@ define([
     'jquery',
     'underscore',
     'bluz.notify',
-    'text!modules/parse/roles/views/templates/child-user-add-view.html',
+    'text!modules/parse/roles/views/templates/add-child-user.html',
     'bootstrap',
     'json2'
 ], function (Backbone, Parse, $, _, notify, ChildUserAddTemplate) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
-    var ChildUserAddView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(ChildUserAddTemplate),
         events: {
             'click button.submit': 'submitCreate',
@@ -58,6 +54,4 @@ define([
             });
         }
     });
-
-    return ChildUserAddView;
 });

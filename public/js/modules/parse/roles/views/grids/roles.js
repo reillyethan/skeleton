@@ -7,18 +7,14 @@ define([
     'parse',
     'bluz.notify',
     'underscore',
-    'role-view',
-    'role-collection',
-    'role-create-view',
+    'modules/parse/roles/views/grids/elements/role',
+    'modules/parse/roles/collections/role',
+    'modules/parse/roles/views/forms/add-role',
     'text!modules/parse/roles/views/templates/grid.html',
     'json2',
     'bootstrap'
 ], function ($, Backbone, Parse, notify, _, RoleView, RoleCollection, RoleCreateView, GridTemplate) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
-    var GridView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(GridTemplate),
         events: {
             'click button.create': 'createRole'
@@ -64,6 +60,4 @@ define([
             roleCreateView.render();
         }
     });
-
-    return GridView;
 });

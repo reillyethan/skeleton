@@ -7,19 +7,15 @@ define([
     'underscore',
     'bluz.notify',
     'text!modules/parse/roles/views/templates/role.html',
-    'grid-child-roles-view',
-    'grid-child-users-view',
+    'modules/parse/roles/views/grids/child-roles',
+    'modules/parse/roles/views/grids/child-users',
     'bootstrap',
     'json2'
 ], function (Backbone, $, _, notify, Role, GridChildRolesView, GridChildUsersView) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
     var APP_ID = "v0J2mglwXn35AbQfBC4qyFoRPXvRkGLPvHkblaMe";
     var REST_KEY = "FjGzHv8sQKjY9FH32Y4PFdEuwgFjWq03xm1i8Cc2";
 
-    var RoleView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(Role),
         events: {
             'click button.remove': 'remove',
@@ -35,6 +31,8 @@ define([
             );
             this.model.bind('change', this.render);
             this.model.bind('remove', this.unrender);
+            //VENT OBJECT
+
         },
         render: function(){
             this.$el.html(this.template({
@@ -74,6 +72,4 @@ define([
             gridChildUsersView.render();
         }
     });
-
-    return RoleView;
 });

@@ -6,9 +6,9 @@ define([
     'jquery',
     'underscore',
     'bluz.notify',
-    'user-edit-view',
+    'modules/parse/users/views/forms/edit-user',
     'text!modules/parse/users/views/templates/user.html',
-    'user-reset-password-view',
+    'modules/parse/users/views/forms/reset-password',
     'bootstrap',
     'json2'
 ], function (Backbone, $, _, notify, UserEditView, User, UserResetPasswordView) {

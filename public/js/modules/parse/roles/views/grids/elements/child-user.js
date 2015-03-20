@@ -10,11 +10,7 @@ define([
     'bootstrap',
     'json2'
 ], function (Backbone, $, _, notify, ChildUser) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
-    var ChildUserView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(ChildUser),
         events: {
             'click button.remove': 'remove'
@@ -56,6 +52,4 @@ define([
             });
         }
     });
-
-    return ChildUserView;
 });
