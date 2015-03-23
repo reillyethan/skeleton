@@ -24,13 +24,16 @@ define([
         events: {
             'click button.edit': 'edit',
             'click button.reset-password': 'resetPassword',
-            'click button.remove': 'remove'
+            'click button.remove': 'remove',
+            'click button.profile': 'profile'
+
         },
         initialize: function(){
             _.bindAll(
                 this,
                 'render',
                 'unrender',
+                'profile',
                 'edit',
                 'resetPassword',
                 'remove'
@@ -117,6 +120,9 @@ define([
             } else {
                 notify.addError('Log in!');
             }
+        },
+        profile: function () {
+            
         }
     });
 

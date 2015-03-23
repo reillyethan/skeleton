@@ -11,10 +11,11 @@ define([
     'modules/parse/users/collections/user',
     'modules/parse/users/views/forms/add-user',
     'text!modules/parse/users/views/templates/grid.html',
+    'modules/parse/users/views/forms/login-user',
     'json2',
     'bootstrap'
-], function ($, Backbone, Parse, notify, _, UserView, UserCollection, UserCreateView, GridTemplate) {
-    return Backbone.View.extend({
+], function ($, Backbone, Parse, notify, _, UserView, UserCollection, UserCreateView, GridTemplate, UserLoginView) {
+    var UsersGridView = Backbone.View.extend({
         template: _.template(GridTemplate),
         events: {
             'click button.fb-login': 'fbLogin',
@@ -95,17 +96,11 @@ define([
         },
         login: function () {
             var currentUser = Parse.User.current();
-            var self = this;
-            if ('undefined' !== typeof(currentUser)) {
-                Parse.User.logIn($('input.log-in-username').val(), $('input.log-in-password').val(), {
-                    success: function(user) {
-                        self.updateCurrentUser();
-                        notify.addSuccess('You have successfully logged in!');
-                    },
-                    error: function(user, error) {
-                        notify.addError('Authentication failed! Message: ' + error.message);
-                    }
-                });
+            if (currentUser) {
+                notify.addError('You are already logged in!');
+            } else {
+                var userLogin = new UserLoginView({'usersGridView': this,'el': 'div.col-lg-9'});
+                userLogin.render();
             }
         },
         logout: function () {
@@ -118,10 +113,12 @@ define([
         updateCurrentUser: function () {
             var currentUser = Parse.User.current();
             if (currentUser) {
-                this.$el.find('div.row > div.col-md-4 > dl > dd.current-user').text(currentUser.attributes.username);
+                this.$el.find('dl > dd.current-user').text(currentUser.attributes.username);
             } else {
-                this.$el.find('div.row > div.col-md-4 > dl > dd.current-user').text('You are not logged in!');
+                this.$el.find('dl > dd.current-user').text('You are not logged in!');
             }
         }
     });
+
+    return UsersGridView;
 });

@@ -11,13 +11,9 @@ define([
     'bootstrap',
     'json2'
 ], function (Backbone, Parse, $, _, notify, UserEditTemplate) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
     var customFieldsCounter = 0;
 
-    var UserEditView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(UserEditTemplate),
         events: {
             'click button.submit': 'submitEdit',
@@ -133,6 +129,4 @@ define([
             });
         }
     });
-
-    return UserEditView;
 });

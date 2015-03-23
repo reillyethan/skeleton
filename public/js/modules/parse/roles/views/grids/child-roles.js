@@ -88,12 +88,11 @@ define([
                 'collection': this.collection,
                 'el': 'div.col-lg-9'
             });
-            
+
             childRoleAddView.render();
         }
     });
 
-    Backbone.pubSub = _.extend({}, Backbone.Events);
     Backbone.pubSub.on('buttonShowChildRolesClicked', function(data) {
         var childRolesGrid = new ChildRolesGrid({'model': data.model, 'el': 'div.col-lg-9'});
         childRolesGrid.render();

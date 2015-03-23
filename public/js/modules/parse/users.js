@@ -4,7 +4,8 @@
 define([
     'backbone',
     'parse',
-    'modules/parse/users/views/grids/users'
+    'modules/parse/users/views/grids/users',
+    'helpers/event-manager'
 ], function (Backbone, Parse, GridView) {
     var APP_ID = "v0J2mglwXn35AbQfBC4qyFoRPXvRkGLPvHkblaMe";
     var JAVASCRIPT_KEY = "F2Um4CQ8uyB52vuZe8TDHrGagXMyiM8zDgYajg20";

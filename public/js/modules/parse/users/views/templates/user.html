@@ -1,32 +1,11 @@
-<td class="authData">
-    <% if (authData) { %>
-    <dl>
-        <dt>Access token</dt>
-        <dd><%= authData.facebook.access_token %></dd>
-        <dt>Expiration Date</dt>
-        <dd><%= authData.facebook.expiration_date %></dd>
-        <dt>Facebook ID</dt>
-        <dd><%= authData.facebook.id %></dd>
-    </dl>
-    <% } %>
-</td>
 <td class="objectId"><%= user.id%></td>
 <td class="objectId"><%= user.createdAt%></td>
 <td class="objectId"><%= user.updatedAt%></td>
 <td class="email"><%= user.attributes.email %></td>
 <td class="username"><%= user.attributes.username %></td>
-<td class="other">
-    <dl>
-        <% _.each(keys, function(key, index) {
-            if (keys[index] != 'authData' && keys[index] != 'email' && keys[index] != 'username') { %>
-                <dt><%= keys[index] %></dt>
-                <dd><%= values[index] %></dd>
-        <%  }
-        }); %>
-    </dl>
-</td>
 <td class="blank">
     <div class="btn-group btn-group-xs" role="group">
+        <button type="button" class="profile btn btn-info btn-xs"><i class="fa fa-user"></i></button>
         <button type="button" class="edit btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button>
         <button type="button" class="reset-password btn btn-default btn-xs"><i class="fa fa-lock"></i></button>
         <button type="button" class="remove btn btn-danger btn-xs"><i class="fa fa-remove"></i></button>

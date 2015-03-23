@@ -11,11 +11,7 @@ define([
     'bootstrap',
     'json2'
 ], function (Backbone, Parse, $, _, notify, UserResetPasswordTemplate) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
-    var UserResetPasswordView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(UserResetPasswordTemplate),
         events: {
             'click button.submit': 'submitResetPassword',
@@ -49,6 +45,4 @@ define([
             });
         }
     });
-
-    return UserResetPasswordView;
 });

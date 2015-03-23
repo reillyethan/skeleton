@@ -11,13 +11,9 @@ define([
     'bootstrap',
     'json2'
 ], function (Backbone, Parse, $, _, notify, UserCreateTemplate) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
     var moreFieldsCounter = 0;
 
-    var UserCreateView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(UserCreateTemplate),
         events: {
             'click button.submit': 'submitCreate',
@@ -112,6 +108,4 @@ define([
             }
         }
     });
-
-    return UserCreateView;
 });
