@@ -31,10 +31,12 @@ define([
                 'moreObjectsFields',
                 'lessObjectsFields'
             );
+
             this.collection = options.collection;
         },
         render: function () {
             this.$el.append(this.template({modalClass: modalClass}));
+            console.log(this.$el.find('div.' + modalClass));
             this.$el.find('div.' + modalClass).modal('show');
         },
         unrender: function () {

@@ -31,10 +31,10 @@ define([
         },
         render: function () {
             this.$el.append(this.template({modalClass: modalClass}));
-            this.$el.find('div' + modalClass).modal('show');
+            this.$el.find('div.' + modalClass).modal('show');
         },
         unrender: function () {
-            this.$el.find('div' + modalClass).remove();
+            this.$el.find('div.' + modalClass).remove();
         },
         submitCreate: function () {
             var self = this;
@@ -43,13 +43,12 @@ define([
             var query = new Parse.Query(Parse.Role).equalTo('name', this.parentRole.attributes.name).find({
                 success: function(result) {
                     var parentRole = result[0];
-                    console.log(name);
                     var query = new Parse.Query(Parse.Role).equalTo('name', name).find({
                         success: function (result) {
                             parentRole.getRoles().add(result[0]);
                             parentRole.save();
                             self.collection.add(result[0]);
-                            self.$el.find('div' + modalClass).modal('hide');
+                            self.$el.find('div.' + modalClass).modal('hide');
                             notify.addSuccess('Child role has been added!');
                         }
                     });

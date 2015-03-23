@@ -88,6 +88,7 @@ define([
                 'collection': this.collection,
                 'el': 'div.col-lg-9'
             });
+            
             childRoleAddView.render();
         }
     });
