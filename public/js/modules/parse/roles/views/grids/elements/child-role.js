@@ -7,8 +7,7 @@ define([
     'underscore',
     'bluz.notify',
     'text!modules/parse/roles/views/templates/child-role.html',
-    //'modules/parse/roles/views/grids/child-roles', //Optional?
-    //'modules/parse/roles/views/grids/child-users', //Optional?
+    'modules/parse/roles/views/grids/child-users',
     'bootstrap',
     'json2'
 ], function (
@@ -16,9 +15,8 @@ define([
     $,
     _,
     notify,
-    ChildRole
-    //ChildRolesView,
-    //GridChildUsersView
+    ChildRole,
+    GridChildUsersView
     ) {
     return Backbone.View.extend({
         template: _.template(ChildRole),
@@ -35,7 +33,6 @@ define([
                 'remove',
                 'showChildRoles'
             );
-            //this.vent = options.vent;
             this.parentRole = options.parentRole;
             this.model.bind('remove', this.unrender);
         },
@@ -67,9 +64,6 @@ define([
         },
         showChildRoles: function () {
             Backbone.pubSub.trigger('buttonShowChildRolesClicked', {'model': this.model, 'el': 'div.col-lg-9'});
-            //this.trigger('buttonShowChildRolesClicked', {'model': this.model, 'el': 'div.col-lg-9'});
-            //var gridChildRolesView = new GridChildRolesView({'model': this.model, 'el': 'div.col-lg-9'});
-            //gridChildRolesView.render();
         },
         showChildUsers: function () {
             var gridChildUsersView = new GridChildUsersView({'model': this.model, 'el': 'div.col-lg-9'});

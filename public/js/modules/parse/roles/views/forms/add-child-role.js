@@ -11,6 +11,8 @@ define([
     'bootstrap',
     'json2'
 ], function (Backbone, Parse, $, _, notify, ChildRoleAddTemplate) {
+    var modalClass = "add-child-role";
+
     return Backbone.View.extend({
         template: _.template(ChildRoleAddTemplate),
         events: {
@@ -28,11 +30,11 @@ define([
             this.parentRole = options.parentRole;
         },
         render: function () {
-            this.$el.append(this.template());
-            this.$el.find('div.modal-create').modal('show');
+            this.$el.append(this.template({modalClass: modalClass}));
+            this.$el.find('div' + modalClass).modal('show');
         },
         unrender: function () {
-            this.$el.find('div.modal-create').remove();
+            this.$el.find('div' + modalClass).remove();
         },
         submitCreate: function () {
             var self = this;
@@ -47,7 +49,7 @@ define([
                             parentRole.getRoles().add(result[0]);
                             parentRole.save();
                             self.collection.add(result[0]);
-                            self.$el.find('div.modal-create').modal('hide');
+                            self.$el.find('div' + modalClass).modal('hide');
                             notify.addSuccess('Child role has been added!');
                         }
                     });

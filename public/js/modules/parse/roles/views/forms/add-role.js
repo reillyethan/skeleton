@@ -12,6 +12,7 @@ define([
     'json2'
 ], function (Backbone, Parse, $, _, notify, RoleCreateTemplate) {
     var moreFieldsCounter = 0;
+    var modalClass = "add-role";
 
     return Backbone.View.extend({
         template: _.template(RoleCreateTemplate),
@@ -33,11 +34,11 @@ define([
             this.collection = options.collection;
         },
         render: function () {
-            this.$el.append(this.template());
-            this.$el.find('div.modal-create').modal('show');
+            this.$el.append(this.template({modalClass: modalClass}));
+            this.$el.find('div.' + modalClass).modal('show');
         },
         unrender: function () {
-            this.$el.find('div.modal-create').remove();
+            this.$el.find('div' + modalClass).remove();
         },
         submitCreate: function () {
             var self = this;
@@ -91,7 +92,7 @@ define([
                 role.save(null, {
                     success: function(role) {
                         self.collection.add(role);
-                        self.$el.find('div.modal-create').modal('hide');
+                        self.$el.find('div' + modalClass).modal('hide');
                         notify.addSuccess('Role ' + name + ' is successfully created');
                     },
                     error: function(role, error) {
@@ -103,9 +104,9 @@ define([
         moreObjectsFields: function () {
             moreFieldsCounter++;
             if (moreFieldsCounter > 0) {
-                if (this.$el.find('div.modal').find('div.btn-group > button.less').length === 0) {
+                if (this.$el.find('div' + modalClass).find('div.btn-group > button.less').length === 0) {
                     this.$el
-                        .find('div.modal')
+                        .find('div' + modalClass)
                         .find('div.specific-object > div.btn-group')
                         .append('<button class="less btn btn-xs btn-warning" type="button">Less fields</button>');
                 }
@@ -116,7 +117,7 @@ define([
                 .clone()
                 .appendTo(this.$el.find('div.specific-object'));
 
-            this.$el.find('div.modal').find('div.btn-group').appendTo(
+            this.$el.find('div' + modalClass).find('div.btn-group').appendTo(
                 this.$el.find('div.specific-object')
             );
         },
@@ -129,7 +130,7 @@ define([
 
             if (moreFieldsCounter == 0) {
                 this.$el
-                    .find('div.modal')
+                    .find('div' + modalClass)
                     .find('div.specific-object button.less')
                     .remove();
             }

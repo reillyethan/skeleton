@@ -14,6 +14,7 @@ define([
     'json2',
     'bootstrap'
 ], function ($, Backbone, Parse, notify, _, ChildRoleView, RoleCollection, GridChildRolesTemplate, ChildRoleAddView) {
+    var modalClass = "child-roles";
 
     var ChildRolesGrid = Backbone.View.extend({
         template: _.template(GridChildRolesTemplate),
@@ -22,7 +23,6 @@ define([
             'click button.addChildRole': 'addChildRole'
         },
         initialize: function(options){
-            console.log('Wake up, Neo');
             _.bindAll(
                 this,
                 'render',
@@ -44,7 +44,6 @@ define([
                             for (i in results) {
                                 self.collection.add(results[i]);
                             }
-                            self.render(); //TODO: be carefull here
                         },
                         error: function (error) {
                             notify.addError("Error: " + error.code + " " + error.message);
@@ -54,15 +53,15 @@ define([
             });
         },
         render: function () {
-            this.$el.append(this.template());
+            this.$el.append(this.template({modalClass: modalClass}));
             var self = this;
             _(this.collection.models).each(function(role){
-                self.find('div.modal-child table > tbody').appendRole(role);
+                self.find('div.' + modalClass).find('table > tbody').appendRole(role);
             }, this);
-            this.$el.find('div.modal-child').modal('show');
+            this.$el.find('div.' + modalClass).modal('show');
         },
         unrender: function () {
-            this.$el.find('div.modal-child').remove();
+            this.$el.find('div.' + modalClass).remove();
         },
         appendRole: function (role) {
             var self = this;
@@ -71,12 +70,11 @@ define([
                     var parentRole = result[0];
                     var query = new Parse.Query(Parse.Role).equalTo('name',role.attributes.name).find({
                         success: function (result) {
-                            self.$el.find('div.modal-child table > tbody').append('<tr class="' + result[0].attributes.name + '"></tr>');
+                            self.$el.find('div.' + modalClass).find('table > tbody').append('<tr class="' + result[0].attributes.name + '"></tr>');
                             var childRoleView = new ChildRoleView({
-                                //vent: self.vent,
                                 parentRole: parentRole,
                                 model: result[0],
-                                el: self.$el.find('div.modal-child table > tbody > tr.' + result[0].attributes.name)
+                                el: self.$el.find('div.' + modalClass).find('table > tbody > tr.' + result[0].attributes.name)
                             });
                             childRoleView.render();
                         }
@@ -96,10 +94,9 @@ define([
 
     Backbone.pubSub = _.extend({}, Backbone.Events);
     Backbone.pubSub.on('buttonShowChildRolesClicked', function(data) {
-        var childRolesGrid = new ChildRolesGrid({'model': this.model, 'el': 'div.col-lg-9'});
+        var childRolesGrid = new ChildRolesGrid({'model': data.model, 'el': 'div.col-lg-9'});
+        childRolesGrid.render();
     }, this);
 
     return ChildRolesGrid;
-
-
 });

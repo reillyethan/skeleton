@@ -14,6 +14,8 @@ define([
     'json2',
     'bootstrap'
 ], function ($, Backbone, Parse, notify, _, ChildUserView, RoleCollection, GridChildUsersTemplate, ChildUserAddView) {
+    var modalClass = "child-users";
+
     return Backbone.View.extend({
         template: _.template(GridChildUsersTemplate),
         events: {
@@ -49,15 +51,15 @@ define([
             });
         },
         render: function () {
-            this.$el.append(this.template());
+            this.$el.append(this.template({modalClass: modalClass}));
             var self = this;
             _(this.collection.models).each(function(user){
-                self.find('div.modal-child table > tbody').appendUser(user);
+                self.find('div.' + modalClass).find('table > tbody').appendUser(user);
             }, this);
-            this.$el.find('div.modal-child').modal('show');
+            this.$el.find('div.' + modalClass).modal('show');
         },
         unrender: function () {
-            this.$el.find('div.modal-child').remove();
+            this.$el.find('div.' + modalClass).remove();
         },
         appendUser: function (user) {
             var self = this;
@@ -66,11 +68,11 @@ define([
                     var parentRole = result[0];
                     var query = new Parse.Query(Parse.User).equalTo('username',user.attributes.username).find({
                         success: function (result) {
-                            self.$el.find('div.modal-child table > tbody').append('<tr class="' + result[0].attributes.username + '"></tr>');
+                            self.$el.find('div.' + modalClass).find('table > tbody').append('<tr class="' + result[0].attributes.username + '"></tr>');
                             var childUserView = new ChildUserView({
                                 parentRole: parentRole,
                                 model: result[0],
-                                el: self.$el.find('div.modal-child table > tbody > tr.' + result[0].attributes.username)
+                                el: self.$el.find('div.' + modalClass).find('table > tbody > tr.' + result[0].attributes.username)
                             });
                             childUserView.render();
                         }
