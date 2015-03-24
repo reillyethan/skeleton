@@ -38,7 +38,6 @@ define([
                 'undefined' !== typeof(this.model.attributes.authData.facebook)){
                 authData = this.model.attributes.authData;
             }
-
             this.$el.append(this.template({
                 keys: keysArray,
                 values: valuesArray,

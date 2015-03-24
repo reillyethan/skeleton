@@ -14,3 +14,7 @@ table {
     table-layout: fixed;
     word-wrap: break-word;
 }
+
+div.modal-body {
+    word-break: break-all;
+}

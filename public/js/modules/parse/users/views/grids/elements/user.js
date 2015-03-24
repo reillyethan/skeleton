@@ -9,9 +9,10 @@ define([
     'modules/parse/users/views/forms/edit-user',
     'text!modules/parse/users/views/templates/user.html',
     'modules/parse/users/views/forms/reset-password',
+    'modules/parse/users/views/forms/profile-user',
     'bootstrap',
     'json2'
-], function (Backbone, $, _, notify, UserEditView, User, UserResetPasswordView) {
+], function (Backbone, $, _, notify, UserEditView, User, UserResetPasswordView, UserProfileView) {
     Backbone.sync = function(method, model, success, error){
         success();
     }
@@ -122,7 +123,11 @@ define([
             }
         },
         profile: function () {
-            
+            var userProfileView = new UserProfileView({
+                'model': this.model,
+                'el': 'div.col-lg-9'
+            });
+            userProfileView.render();
         }
     });
 
