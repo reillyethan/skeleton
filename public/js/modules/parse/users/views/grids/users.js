@@ -65,6 +65,7 @@ define([
         appendUser: function (user) {
             this.$el.find('table > tbody').append('<tr class="' + user.attributes.username + '"></tr>');
             var userView = new UserView({
+                grid: this,
                 model: user,
                 el: this.$el.find('table > tbody > tr.' + user.attributes.username)
             });

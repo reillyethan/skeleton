@@ -54,9 +54,15 @@ define([
                     var query = new Parse.Query(Parse.Role).equalTo('name', self.model.attributes.name).find({
                         success: function (result) {
                             parentRole.getRoles().remove(result[0]);
-                            parentRole.save();
-                            self.unrender();
-                            notify.addSuccess('Child role removed!');
+                            parentRole.save({
+                                success: function () {
+                                    self.unrender();
+                                    notify.addSuccess('Child role removed!');
+                                },
+                                error: function (xhr, error) {
+                                    notify.addError('Error occured while  role! Message: ' + error.message);
+                                }
+                            });
                         }
                     });
                 }

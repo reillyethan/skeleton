@@ -20,7 +20,7 @@ define([
     var APP_ID = "v0J2mglwXn35AbQfBC4qyFoRPXvRkGLPvHkblaMe";
     var REST_KEY = "FjGzHv8sQKjY9FH32Y4PFdEuwgFjWq03xm1i8Cc2";
 
-    var UserView = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(User),
         events: {
             'click button.edit': 'edit',
@@ -29,7 +29,7 @@ define([
             'click button.profile': 'profile'
 
         },
-        initialize: function(){
+        initialize: function(options){
             _.bindAll(
                 this,
                 'render',
@@ -41,6 +41,7 @@ define([
             );
             this.model.bind('change', this.render);
             this.model.bind('remove', this.unrender);
+            this.grid = options.grid;
         },
         render: function(){
             var keysArray = [];
@@ -109,6 +110,7 @@ define([
                         success: function (result) {
                             self.model.destroy();
                             Parse.User.logOut();
+                            self.grid.updateCurrentUser();
                             notify.addSuccess('User has been successfully deleted!');
                         },
                         error: function(xhr, status, error) {
@@ -130,6 +132,4 @@ define([
             userProfileView.render();
         }
     });
-
-    return UserView;
 });

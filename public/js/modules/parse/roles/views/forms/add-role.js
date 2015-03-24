@@ -113,7 +113,6 @@ define([
                         .append('<button class="less btn btn-xs btn-warning" type="button">Less fields</button>');
                 }
             }
-
             this.$el
                 .find('div.fields')
                 .clone()
@@ -129,7 +128,6 @@ define([
                 .find('div.fields')
                 .last()
                 .remove();
-
             if (moreFieldsCounter == 0) {
                 this.$el
                     .find('div' + modalClass)

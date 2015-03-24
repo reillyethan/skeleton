@@ -31,14 +31,11 @@ define([
             );
             this.model.bind('change', this.render);
             this.model.bind('remove', this.unrender);
-            //VENT OBJECT
-
         },
         render: function(){
             this.$el.html(this.template({
                 role: this.model.attributes
             }));
-
             return this;
         },
         unrender: function(){
@@ -46,20 +43,23 @@ define([
         },
         remove: function(){
             var self = this;
-
-            $.ajax({
-                url: 'https://api.parse.com/1/roles/' + self.model.id,
-                type: 'DELETE',
-                headers: {
-                    'X-Parse-Application-Id': APP_ID,
-                    'X-Parse-REST-API-Key': REST_KEY
-                },
-                success: function (result) {
-                    self.model.destroy();
-                    notify.addSuccess('Role has been successfully deleted!');
-                },
-                error: function (xhr, status, error) {
-                    notify.addError('Error occured while deleting a user! Message: ' + xhr.responseText);
+            var query = new Parse.Query(Parse.Role).equalTo('name', this.model.attributes.name).find({
+                success: function(result) {
+                    $.ajax({
+                        url: 'https://api.parse.com/1/roles/' + result[0].id,
+                        type: 'DELETE',
+                        headers: {
+                            'X-Parse-Application-Id': APP_ID,
+                            'X-Parse-REST-API-Key': REST_KEY
+                        },
+                        success: function (result) {
+                            self.model.destroy();
+                            notify.addSuccess('Role has been successfully deleted!');
+                        },
+                        error: function (xhr, status, error) {
+                            notify.addError('Error occured while deleting a role! Message: ' + xhr.responseText);
+                        }
+                    });
                 }
             });
         },

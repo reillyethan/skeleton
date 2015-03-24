@@ -34,7 +34,6 @@ define([
             this.collection = new RoleCollection();
             this.collection.bind('add', this.appendRole);
             this.parentRole = options.model;
-            this.vent = options.vent;
 
             var query = new Parse.Query(Parse.Role).equalTo('name', options.model.attributes.name).find({
                 success: function(result) {

@@ -46,10 +46,17 @@ define([
                     var query = new Parse.Query(Parse.Role).equalTo('name', name).find({
                         success: function (result) {
                             parentRole.getRoles().add(result[0]);
-                            parentRole.save();
-                            self.collection.add(result[0]);
-                            self.$el.find('div.' + modalClass).modal('hide');
-                            notify.addSuccess('Child role has been added!');
+                            parentRole.save({
+                                success: function () {
+                                    self.collection.add(result[0]);
+                                    self.$el.find('div.' + modalClass).modal('hide');
+                                    notify.addSuccess('Child role has been added!');
+                                },
+                                error: function (xhr, status) {
+                                    notify.addError('Error occured while  role! Message: ' + status.message);
+                                }
+                            });
+
                         }
                     });
                 }
