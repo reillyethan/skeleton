@@ -36,20 +36,26 @@ define([
             this.$el.remove();
         },
         remove: function(){
-            var self = this;
-            var query = new Parse.Query(Parse.Role).equalTo('name', this.parentRole.attributes.name).find({
-                success: function(result) {
-                    var parentRole = result[0];
-                    var query = new Parse.Query(Parse.User).equalTo('username', self.model.attributes.username).find({
-                        success: function (result) {
-                            parentRole.getUsers().remove(result[0]);
-                            parentRole.save();
+            if (confirm('Are you sure you want to delete that?')) {
+                var self = this;
+                Parse.Cloud.run(
+                    'deleteChildUser',
+                    {
+                        parentName: self.parentRole.attributes.name,
+                        childUsername: self.model.attributes.username
+                    },
+                    {
+                        success: function() {
                             self.unrender();
                             notify.addSuccess('Child user removed!');
+                        },
+                        error: function(error) {
+                            notify.addError('Error occured while deleting a child user from role! Message: ' + error.message);
                         }
-                    });
-                }
-            });
+                    }
+                );
+            }
+            return false;
         }
     });
 });

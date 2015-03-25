@@ -38,22 +38,31 @@ define([
         },
         submitCreate: function () {
             var self = this;
-            var username = $('input.username').val();
-
-            var query = new Parse.Query(Parse.Role).equalTo('name', this.parentRole.attributes.name).find({
-                success: function(result) {
-                    var parentRole = result[0];
-                    var query = new Parse.Query(Parse.User).equalTo('username', username).find({
-                        success: function (result) {
-                            parentRole.getUsers().add(result[0]);
-                            parentRole.save();
-                            self.collection.add(result[0]);
-                            self.$el.find('div.' + modalClass).modal('hide');
-                            notify.addSuccess('Child user has been added!');
-                        }
-                    });
+            var childUsername = $('input.username').val();
+            Parse.Cloud.run(
+                'addChildUser',
+                {
+                    parentName: self.parentRole.attributes.name,
+                    childUsername: childUsername
+                },
+                {
+                    success: function() {
+                        var query = new Parse.Query(Parse.User).equalTo('name', childUsername).find({
+                            success: function (result) {
+                                self.collection.add(result[0]);
+                            },
+                            error: function () {
+                                notify.addError('Unable to render added child user');
+                            }
+                        });
+                        self.$el.find('div.' + modalClass).modal('hide');
+                        notify.addSuccess('Child user has been added!');
+                    },
+                    error: function(error) {
+                        notify.addError('Error occured while adding a child user to a role! Message: ' + error.message);
+                    }
                 }
-            });
+            );
         }
     });
 });

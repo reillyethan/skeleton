@@ -8,7 +8,7 @@
                 <div class="nav-dashboard" data-spy="affix" data-offset-top="60">
                     <ul class="nav nav-tabs nav-stacked" >
                         <li <?=($this->module('parse-users')?'class="active"':'')?>><?php try { echo $this->ahref('<i class="fa fa-user fa-fw"></i> '.__('Parse Users'), ['parse-users', 'grid', [], true]); } catch (\Exception $e) {var_dump($e->getMessage());} ?></li>
-                        <li <?=($this->module('parse-roles')?'class="active"':'')?>><?php try { echo $this->ahref('<i class="fa fa-user fa-fw"></i> '.__('Parse Roles'), ['parse-roles', 'grid', [], true]); } catch (\Exception $e) {var_dump($e->getMessage());} ?></li>
+                        <li <?=($this->module('parse-roles')?'class="active"':'')?>><?php try { echo $this->ahref('<i class="fa fa-lock fa-fw"></i> '.__('Parse Roles'), ['parse-roles', 'grid', [], true]); } catch (\Exception $e) {var_dump($e->getMessage());} ?></li>
                     </ul>
                     <ul class="nav nav-tabs nav-stacked" >
                         <li <?=($this->module('pages')?'class="active"':'')?>><?= $this->ahref('<i class="fa fa-edit fa-fw"></i> '.__('Pages'), ['pages', 'grid', [], true]) ?></li>

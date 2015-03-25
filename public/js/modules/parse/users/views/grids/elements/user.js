@@ -13,13 +13,6 @@ define([
     'bootstrap',
     'json2'
 ], function (Backbone, $, _, notify, UserEditView, User, UserResetPasswordView, UserProfileView) {
-    Backbone.sync = function(method, model, success, error){
-        success();
-    }
-
-    var APP_ID = "v0J2mglwXn35AbQfBC4qyFoRPXvRkGLPvHkblaMe";
-    var REST_KEY = "FjGzHv8sQKjY9FH32Y4PFdEuwgFjWq03xm1i8Cc2";
-
     return Backbone.View.extend({
         template: _.template(User),
         events: {
@@ -98,31 +91,21 @@ define([
             }
         },
         remove: function(){
-            var self = this;
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                if (this.model.attributes.username == currentUser.attributes.username) {
-                    var sessiontoken = currentUser._sessionToken;
-                    $.ajax({
-                        url: 'https://api.parse.com/1/users/' + currentUser.id,
-                        type: 'DELETE',
-                        headers: {'X-Parse-Application-Id': APP_ID, 'X-Parse-REST-API-Key': REST_KEY, 'X-Parse-Session-Token': sessiontoken},
-                        success: function (result) {
-                            self.model.destroy();
-                            Parse.User.logOut();
-                            self.grid.updateCurrentUser();
-                            notify.addSuccess('User has been successfully deleted!');
-                        },
-                        error: function(xhr, status, error) {
-                            notify.addError('Error occured while deleting a user! Message: ' + xhr.responseText);
-                        }
-                    });
-                } else {
-                    notify.addError('Only user can delete himself!');
-                }
-            } else {
-                notify.addError('Log in!');
+            if (confirm('Are you sure you want to delete that?')) {
+                var self = this;
+                Parse.Cloud.run('deleteUser', {username: self.model.attributes.username}, {
+                    success: function(result) {
+                        self.model.destroy();
+                        Parse.User.logOut();
+                        self.grid.updateCurrentUser();
+                        notify.addSuccess('User has been successfully deleted!');
+                    },
+                    error: function(error) {
+                        notify.addError('Error occured while deleting user! Message: ' + error.message);
+                    }
+                });
             }
+            return false;
         },
         profile: function () {
             var userProfileView = new UserProfileView({

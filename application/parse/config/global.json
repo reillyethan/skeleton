@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "_default": {
+            "link": "bluz-parse"
+        }, 
+        "bluz-parse": {
+            "applicationId": "v0J2mglwXn35AbQfBC4qyFoRPXvRkGLPvHkblaMe", 
+            "masterKey": "wu1iQoGCdEirzHXjcjfKBVkhvE1yuP3bRykoTN46"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.3.5"
+    }
+}

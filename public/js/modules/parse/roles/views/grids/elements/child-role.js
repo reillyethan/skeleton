@@ -47,26 +47,26 @@ define([
             this.$el.remove();
         },
         remove: function(){
-            var self = this;
-            var query = new Parse.Query(Parse.Role).equalTo('name', this.parentRole.attributes.name).find({
-                success: function(result) {
-                    var parentRole = result[0];
-                    var query = new Parse.Query(Parse.Role).equalTo('name', self.model.attributes.name).find({
-                        success: function (result) {
-                            parentRole.getRoles().remove(result[0]);
-                            parentRole.save({
-                                success: function () {
-                                    self.unrender();
-                                    notify.addSuccess('Child role removed!');
-                                },
-                                error: function (xhr, error) {
-                                    notify.addError('Error occured while  role! Message: ' + error.message);
-                                }
-                            });
+            if (confirm('Are you sure you want to delete that?')) {
+                var self = this;
+                Parse.Cloud.run(
+                    'deleteChildRole',
+                    {
+                        parentName: self.parentRole.attributes.name,
+                        childName: self.model.attributes.name
+                    },
+                    {
+                        success: function() {
+                            self.unrender();
+                            notify.addSuccess('Child role removed!');
+                        },
+                        error: function(error) {
+                            notify.addError('Error occured while deleting a child role role! Message: ' + error.message);
                         }
-                    });
-                }
-            });
+                    }
+                );
+            }
+            return false;
         },
         showChildRoles: function () {
             Backbone.pubSub.trigger('buttonShowChildRolesClicked', {'model': this.model, 'el': 'div.col-lg-9'});

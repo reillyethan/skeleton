@@ -12,9 +12,6 @@ define([
     'bootstrap',
     'json2'
 ], function (Backbone, $, _, notify, Role, GridChildRolesView, GridChildUsersView) {
-    var APP_ID = "v0J2mglwXn35AbQfBC4qyFoRPXvRkGLPvHkblaMe";
-    var REST_KEY = "FjGzHv8sQKjY9FH32Y4PFdEuwgFjWq03xm1i8Cc2";
-
     return Backbone.View.extend({
         template: _.template(Role),
         events: {
@@ -42,26 +39,19 @@ define([
             this.$el.remove();
         },
         remove: function(){
-            var self = this;
-            var query = new Parse.Query(Parse.Role).equalTo('name', this.model.attributes.name).find({
-                success: function(result) {
-                    $.ajax({
-                        url: 'https://api.parse.com/1/roles/' + result[0].id,
-                        type: 'DELETE',
-                        headers: {
-                            'X-Parse-Application-Id': APP_ID,
-                            'X-Parse-REST-API-Key': REST_KEY
-                        },
-                        success: function (result) {
-                            self.model.destroy();
-                            notify.addSuccess('Role has been successfully deleted!');
-                        },
-                        error: function (xhr, status, error) {
-                            notify.addError('Error occured while deleting a role! Message: ' + xhr.responseText);
-                        }
-                    });
-                }
-            });
+            if (confirm('Are you sure you want to delete that?')) {
+                var self = this;
+                Parse.Cloud.run('deleteRole', {name: self.model.attributes.name}, {
+                    success: function(result) {
+                        self.model.destroy();
+                        notify.addSuccess('Role has been successfully deleted!');
+                    },
+                    error: function(error) {
+                        notify.addError('Error occured while deleting role! Message: ' + error.message);
+                    }
+                });
+            }
+            return false;
         },
         showChildRoles: function () {
             var gridChildRolesView = new GridChildRolesView({'model': this.model, 'el': 'div.col-lg-9'});

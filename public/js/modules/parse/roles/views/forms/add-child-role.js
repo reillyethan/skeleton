@@ -38,29 +38,31 @@ define([
         },
         submitCreate: function () {
             var self = this;
-            var name = $('input.name').val();
-
-            var query = new Parse.Query(Parse.Role).equalTo('name', this.parentRole.attributes.name).find({
-                success: function(result) {
-                    var parentRole = result[0];
-                    var query = new Parse.Query(Parse.Role).equalTo('name', name).find({
-                        success: function (result) {
-                            parentRole.getRoles().add(result[0]);
-                            parentRole.save({
-                                success: function () {
-                                    self.collection.add(result[0]);
-                                    self.$el.find('div.' + modalClass).modal('hide');
-                                    notify.addSuccess('Child role has been added!');
-                                },
-                                error: function (xhr, status) {
-                                    notify.addError('Error occured while  role! Message: ' + status.message);
-                                }
-                            });
-
-                        }
-                    });
+            var childName = $('input.name').val();
+            Parse.Cloud.run(
+                'addChildRole',
+                {
+                    parentName: self.parentRole.attributes.name,
+                    childName: childName
+                },
+                {
+                    success: function() {
+                        var query = new Parse.Query(Parse.Role).equalTo('name', childName).find({
+                            success: function (result) {
+                                self.collection.add(result[0]);
+                            },
+                            error: function () {
+                                notify.addError('Unable to render added child role');
+                            }
+                        });
+                        self.$el.find('div.' + modalClass).modal('hide');
+                        notify.addSuccess('Child role has been added!');
+                    },
+                    error: function(error) {
+                        notify.addError('Error occured while adding a child role to a role! Message: ' + error.message);
+                    }
                 }
-            });
+            );
         }
     });
 });
