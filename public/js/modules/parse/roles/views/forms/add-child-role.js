@@ -37,6 +37,7 @@ define([
             this.$el.find('div.' + modalClass).remove();
         },
         submitCreate: function () {
+            $(".submit").attr("disabled", true);
             var self = this;
             var childName = $('input.name').val();
             Parse.Cloud.run(
@@ -63,6 +64,7 @@ define([
                     }
                 }
             );
+            $(".submit").removeAttr("disabled");
         }
     });
 });

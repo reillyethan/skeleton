@@ -11,11 +11,10 @@ define([
     'modules/parse/users/collections/user',
     'modules/parse/users/views/forms/add-user',
     'text!modules/parse/users/views/templates/grid.html',
-    'modules/parse/users/views/forms/login-user',
     'json2',
     'bootstrap'
-], function ($, Backbone, Parse, notify, _, UserView, UserCollection, UserCreateView, GridTemplate, UserLoginView) {
-    var UsersGridView = Backbone.View.extend({
+], function ($, Backbone, Parse, notify, _, UserView, UserCollection, UserCreateView, GridTemplate) {
+    return Backbone.View.extend({
         template: _.template(GridTemplate),
         events: {
             'click button.fb-login': 'fbLogin',
@@ -28,11 +27,7 @@ define([
                 this,
                 'render',
                 'appendUser',
-                'fbLogin',
-                'login',
-                'createUser',
-                'logout',
-                'updateCurrentUser'
+                'createUser'
             );
             var self = this;
             this.collection = new UserCollection();
@@ -45,7 +40,6 @@ define([
                         user['objectId'] = results[i].id;
                         user['createdAt'] = results[i].createdAt;
                         user['updatedAt'] = results[i].updatedAt;
-
                         self.collection.add(user);
                     }
                 },
@@ -56,7 +50,6 @@ define([
         },
         render: function () {
             this.$el.append(this.template());
-            this.updateCurrentUser();
             var self = this;
             _(this.collection.models).each(function(user){
                 self.find('table > tbody').appendUser(user);
@@ -74,52 +67,6 @@ define([
         createUser: function () {
             var userCreateView = new UserCreateView({'collection': this.collection, 'el': 'div.col-lg-9'});
             userCreateView.render();
-        },
-        fbLogin: function () {
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                notify.addError('You are already logged in!');
-            } else {
-                Parse.FacebookUtils.logIn(null, {
-                    success: function(user) {
-                        updateCurrentUser();
-                        if (!user.existed()) {
-                            notify.addSuccess("User signed up and logged in through Facebook!");
-                        } else {
-                            notify.addSuccess("User logged in through Facebook!");
-                        }
-                    },
-                    error: function(user, error) {
-                        notify.addError("User cancelled the Facebook login or did not fully authorize. Message: " + error.message);
-                    }
-                });
-            }
-        },
-        login: function () {
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                notify.addError('You are already logged in!');
-            } else {
-                var userLogin = new UserLoginView({'usersGridView': this,'el': 'div.col-lg-9'});
-                userLogin.render();
-            }
-        },
-        logout: function () {
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                Parse.User.logOut();
-                this.updateCurrentUser();
-            }
-        },
-        updateCurrentUser: function () {
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                this.$el.find('dl > dd.current-user').text(currentUser.attributes.username);
-            } else {
-                this.$el.find('dl > dd.current-user').text('You are not logged in!');
-            }
         }
     });
-
-    return UsersGridView;
 });

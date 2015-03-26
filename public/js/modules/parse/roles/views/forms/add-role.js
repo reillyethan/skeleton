@@ -43,6 +43,8 @@ define([
             this.$el.find('div' + modalClass).remove();
         },
         submitCreate: function () {
+            $(".submit").attr("disabled", true);
+
             var self = this;
             var name = $('input.name').val();
 
@@ -102,6 +104,7 @@ define([
                     }
                 });
             }
+            $(".submit").removeAttr("disabled");
         },
         moreObjectsFields: function () {
             moreFieldsCounter++;

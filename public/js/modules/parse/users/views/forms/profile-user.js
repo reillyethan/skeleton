@@ -49,6 +49,8 @@ define([
         },
         unrender: function () {
             this.$el.find('div.' + modalClass).remove();
+            this.model.remove();
+            this.unbind();
         }
     });
 });

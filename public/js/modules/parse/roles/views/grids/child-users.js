@@ -54,7 +54,7 @@ define([
             this.$el.append(this.template({modalClass: modalClass}));
             var self = this;
             _(this.collection.models).each(function(user){
-                self.find('div.' + modalClass).find('table > tbody').appendUser(user);
+                self.$el.find('div.' + modalClass).find('table > tbody').appendUser(user);
             }, this);
             this.$el.find('div.' + modalClass).modal('show');
         },

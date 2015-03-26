@@ -1,4 +1,4 @@
-<div class="modal fade modal-create">
+<div class="modal fade <%=modalClass%>">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -6,8 +6,6 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <h6>Necessary fields</h6>
-
                     <label>Username</label>
                     <input  class="form-control username" type="text" placeholder="username">
 
@@ -17,13 +15,12 @@
                     <label>Password</label>
                     <input class="form-control password" type="password" placeholder="password">
 
-                    <h6>Custom fields</h6>
-                    <button class="btn btn-warning"
+                    <button class="btn btn-warning form-control add-custom-fields"
                             type="button"
                             data-toggle="collapse"
                             data-target=".add-fields-form"
                             aria-expanded="false"
-                            aria-controls="collapseAddFieldsForm">Add</button>
+                            aria-controls="collapseAddFieldsForm">Add custom fields</button>
                     <div class="add-fields-form collapse">
                         <ul class="list-group">
                             <li class="list-group-item">
@@ -32,10 +29,8 @@
                                     <input type="text" class="value form-control" placeholder="Value"/>
                                 </div>
                             </li>
-                            <div class="row">
-                                <div class="col-sm-1">
-                                    <button class="more btn btn-xs btn-warning" type="button">More fields</button>
-                                </div>
+                            <div class="btn-group btn-group-xs" role="group">
+                                <button class="more btn btn-xs btn-primary" type="button"><i class="fa fa-plus"></i></button>
                             </div>
                         </ul>
                     </div>

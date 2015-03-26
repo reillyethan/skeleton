@@ -11,6 +11,8 @@ define([
     'bootstrap',
     'json2'
 ], function (Backbone, Parse, $, _, notify, UserResetPasswordTemplate) {
+    var modalClass = 'reset-password';
+
     return Backbone.View.extend({
         template: _.template(UserResetPasswordTemplate),
         events: {
@@ -27,19 +29,19 @@ define([
         },
         render: function () {
             this.$el.append(this.template());
-            this.$el.find('div.modal-reset-password').modal('show');
+            this.$el.find('div.modal.' + modalClass).modal('show');
         },
         unrender: function () {
-            this.$el.find('div.modal-reset-password').remove();
+            this.$el.find('div.modal.' + modalClass).remove();
         },
         submitResetPassword: function () {
             Parse.User.requestPasswordReset($('div.modal-body>div.form-group>input.email-reset').val(), {
                 success: function() {
-                    $('div.modal-reset-password').modal('hide');
+                    $('div.modal.' + modalClass).modal('hide');
                     notify.addSuccess('Email for resetting password has been sent!');
                 },
                 error: function(error) {
-                    $('div.modal-reset-password').modal('hide');
+                    $('div.modal.' + modalClass).modal('hide');
                     notify.addError("Error: " + error.code + " " + error.message);
                 }
             });

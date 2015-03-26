@@ -18,3 +18,18 @@ table {
 div.modal-body {
     word-break: break-all;
 }
+
+button.add-custom-fields, button.more, button.less {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+input.key, input.value, input.custom-fields-key, input.custom-fields-value {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+.facebook-linking {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}

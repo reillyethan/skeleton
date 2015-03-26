@@ -176,3 +176,31 @@ Parse.Cloud.define('deleteChildUser', function(request, response) {
         }
     });
 });
+
+/**
+ * Edits an user
+ */
+Parse.Cloud.define('editUser', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var query = new Parse.Query(Parse.User).equalTo("username", request.params.username).find({
+        success: function (results) {
+            var user = results[0];
+
+            request.params.userFields.forEach(function (param) {
+                user.set(param.key, param.value);
+            });
+
+            user.save(null, {
+                success: function(user, error) {
+                    if (error) {
+                        response.error('Error occured while saving! Message: ' + error.message);
+                    }
+                    response.success('User has been successfully edited!');
+                }
+            });
+        },
+        error: function () {
+            response.error('User has not been found');
+        }
+    });
+});

@@ -1,4 +1,4 @@
-<div class="modal fade modal-edit">
+<div class="modal fade <%=modalClass%>">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -18,17 +18,26 @@
                         <label for="<%= keys[index] %>"><%= keys[index] %></label>
                         <input type="text" id="<%= keys[index] %>" class="<%= keys[index] %> form-control" value="<%= values[index] %>"/>
                 <%  }}); %>
-                    <div><h5>Facebook</h5></div>
-                    <div class="btn-group" id="facebook">
-                        <button type="button" class="btn btn-info fb-link">Link</button>
-                        <button type="button" class="btn btn-warning fb-unlink">Unlink</button>
+
+                    <button class="btn btn-warning form-control add-custom-fields"
+                            type="button"
+                            data-toggle="collapse"
+                            data-target=".add-fields-form"
+                            aria-expanded="false"
+                            aria-controls="collapseAddFieldsForm">Add custom fields</button>
+                    <div class="add-fields-form collapse">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <div class="form-group">
+                                    <input type="text" id="customFieldsKey" class="custom-fields-key form-control" placeholder="Key"/>
+                                    <input type="text" id="customFieldsValue" class="custom-fields-value form-control" placeholder="Value"/>
+                                </div>
+                            </li>
+                            <div class="btn-group btn-group-xs" role="group">
+                                <button class="more btn btn-xs btn-primary" type="button"><i class="fa fa-plus"></i></button>
+                            </div>
+                        </ul>
                     </div>
-                    <label for="customFieldsKey">Custom fields</label>
-                    <div class="btn-group-xs">
-                        <button type="button" class="more btn btn-warning btn-xs">Add more</button>
-                    </div>
-                    <input type="text" id="customFieldsKey" class="custom-fields-key form-control" placeholder="Key"/>
-                    <input type="text" id="customFieldsValue" class="custom-fields-value form-control" placeholder="Value"/>
                 </div>
             </div>
             <div class="modal-footer">

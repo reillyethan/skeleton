@@ -11,8 +11,7 @@ define([
     'bootstrap',
     'json2'
 ], function (Backbone, Parse, $, _, notify, UserCreateTemplate) {
-    var moreFieldsCounter = 0;
-
+    var modalClass = 'create';
     return Backbone.View.extend({
         template: _.template(UserCreateTemplate),
         events: {
@@ -25,13 +24,14 @@ define([
             this.collection = options.collection;
         },
         render: function () {
-            this.$el.append(this.template());
-            this.$el.find('div.modal-create').modal('show');
+            this.$el.append(this.template({modalClass: modalClass}));
+            this.$el.find('div.modal.' + modalClass).modal('show');
         },
         unrender: function () {
-            this.$el.find('div.modal-create').remove();
+            this.$el.find('div.modal.' + modalClass).remove();
         },
         submitCreate: function () {
+            $(".submit").attr("disabled", true);
             var self = this;
             var username = $('input.username').val();
             var password = $('input.password').val();
@@ -57,30 +57,25 @@ define([
 
                 user.signUp(null, {
                     success: function(user) {
-                        $('input.username').val('');
-                        $('input.password').val('');
-                        $('input.email').val('');
-                        $('div.add-fields-form>ul>li').each(function (counter, element) {
-                            $(element).find('div.form-group>input.key').val('');
-                            $(element).find('div.form-group>input.value').val('');
-                        });
                         self.collection.add(user);
-                        self.$el.find('div.modal-create').modal('hide');
+                        self.$el.find('div.modal.' + modalClass).modal('hide');
                         notify.addSuccess('User ' + username + ' is successfully created');
                     },
                     error: function(user, error) {
                         notify.addError("Error: " + error.code + " " + error.message);
                     }
                 });
+            } else {
+                notify.addError('Not enough fields are filled');
             }
+            $(".submit").removeAttr("disabled");
         },
         moreCustomFields: function () {
-            moreFieldsCounter++;
-            if (moreFieldsCounter > 0) {
-                if (this.$el.find('.add-fields-form > ul > div > div > .less').length === 0) {
+            if (this.$el.find('.add-fields-form > ul.list-group > li.list-group-item').length >= 1) {
+                if (this.$el.find('.add-fields-form > ul > div.btn-group-xs > .less').length === 0) {
                     this.$el
-                        .find('.add-fields-form > ul > div')
-                        .append('<div class="col-sm-1 col-sm-offset-2"><button class="less btn btn-xs btn-warning" type="button">Less fields</button></div>');
+                        .find('.add-fields-form > ul > div.btn-group-xs')
+                        .append('<button class="less btn btn-xs btn-primary" type="button"><i class="fa fa-minus"></i></button>');
                 }
             }
 
@@ -90,20 +85,19 @@ define([
                 .clone()
                 .appendTo(this.$el.find('.add-fields-form > ul.list-group'));
 
-            this.$el.find('.add-fields-form > ul > div.row').appendTo(
+            this.$el.find('.add-fields-form > ul > div.btn-group-xs').appendTo(
                 this.$el.find('.add-fields-form > ul.list-group')
             );
         },
         lessCustomFields: function () {
-            moreFieldsCounter--;
             this.$el
                 .find('.add-fields-form > ul.list-group > li.list-group-item')
                 .last()
                 .remove();
 
-            if (moreFieldsCounter == 0) {
+            if (this.$el.find('.add-fields-form > ul.list-group > li.list-group-item').length == 1) {
                 this.$el
-                    .find('.add-fields-form > ul > div > div > .less')
+                    .find('.add-fields-form > ul > div.btn-group-xs > .less')
                     .remove();
             }
         }

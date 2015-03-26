@@ -1,0 +1,64 @@
+/**
+ * Created by alexander on 3/26/15.
+ */
+define([
+    'backbone',
+    'jquery',
+    'underscore',
+    'bluz.notify',
+    'text!modules/parse/users/views/templates/user-role.html',
+    'bootstrap',
+    'json2'
+], function (Backbone, $, _, notify, UserRoleView) {
+    return Backbone.View.extend({
+        template: _.template(UserRoleView),
+        events: {
+            'click button.remove': 'remove'
+        },
+        initialize: function(options){
+            _.bindAll(
+                this,
+                'render',
+                'unrender',
+                'remove'
+            );
+            this.model.bind('remove', this.unrender);
+            this.username = options.username;
+        },
+        render: function(){
+            this.$el.html(this.template({
+                role: this.model
+            }));
+
+            return this;
+        },
+        unrender: function(){
+            this.$el.remove();
+            this.username.remove();
+            this.model.unbind('remove', this.unrender);
+            this.unbind();
+        },
+        remove: function(){
+            if (confirm('Are you sure you want to delete that?')) {
+                var self = this;
+                Parse.Cloud.run(
+                    'deleteChildUser',
+                    {
+                        parentName: self.model.attributes.name,
+                        childUsername: self.username
+                    },
+                    {
+                        success: function() {
+                            self.unrender();
+                            notify.addSuccess('Child user removed!');
+                        },
+                        error: function(error) {
+                            notify.addError('Error occured while deleting a child user from role! Message: ' + error.message);
+                        }
+                    }
+                );
+            }
+            return false;
+        }
+    });
+});

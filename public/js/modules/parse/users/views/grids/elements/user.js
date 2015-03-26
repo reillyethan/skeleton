@@ -10,17 +10,18 @@ define([
     'text!modules/parse/users/views/templates/user.html',
     'modules/parse/users/views/forms/reset-password',
     'modules/parse/users/views/forms/profile-user',
+    'modules/parse/users/views/grids/user-roles',
     'bootstrap',
     'json2'
-], function (Backbone, $, _, notify, UserEditView, User, UserResetPasswordView, UserProfileView) {
+], function (Backbone, $, _, notify, UserEditView, User, UserResetPasswordView, UserProfileView, UserEditRolesView) {
     return Backbone.View.extend({
         template: _.template(User),
         events: {
             'click button.edit': 'edit',
             'click button.reset-password': 'resetPassword',
+            'click button.edit-roles': 'editRoles',
             'click button.remove': 'remove',
             'click button.profile': 'profile'
-
         },
         initialize: function(options){
             _.bindAll(
@@ -30,6 +31,7 @@ define([
                 'profile',
                 'edit',
                 'resetPassword',
+                'editRoles',
                 'remove'
             );
             this.model.bind('change', this.render);
@@ -60,22 +62,17 @@ define([
         },
         unrender: function(){
             this.$el.remove();
+            this.grid.remove();
+            this.model.unbind('change', this.render);
+            this.model.unbind('remove', this.unrender);
+            this.unbind();
         },
         edit: function(){
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                if (this.model.attributes.username == currentUser.attributes.username) {
-                    var userEditView = new UserEditView({
-                        'model': this.model,
-                        'el': 'div.col-lg-9'
-                    });
-                    userEditView.render();
-                } else {
-                    notify.addError('Only user can edit himself!');
-                }
-            } else {
-                notify.addError('Log in!');
-            }
+            var userEditView = new UserEditView({
+                'model': this.model,
+                'el': 'div.col-lg-9'
+            });
+            userEditView.render();
         },
         resetPassword: function(){
             var currentUser = Parse.User.current();
@@ -97,7 +94,6 @@ define([
                     success: function(result) {
                         self.model.destroy();
                         Parse.User.logOut();
-                        self.grid.updateCurrentUser();
                         notify.addSuccess('User has been successfully deleted!');
                     },
                     error: function(error) {
@@ -113,6 +109,13 @@ define([
                 'el': 'div.col-lg-9'
             });
             userProfileView.render();
+        },
+        editRoles: function () {
+            var userEditRolesView = new UserEditRolesView({
+                'user': this.model,
+                'el': 'div.col-lg-9'
+            });
+            userEditRolesView.render();
         }
     });
 });
