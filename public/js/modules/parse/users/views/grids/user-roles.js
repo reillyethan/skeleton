@@ -32,40 +32,28 @@ define([
 
             this.collection = new UserRoleCollection();
             this.collection.bind('add', this.appendUserRole);
-            this.username = options.user.attributes.username;
-            var query = new Parse.Query(Parse.User).equalTo("username", options.user.attributes.username).find({
-                success: function (results) {
-                    var user = results[0];
-                    if (user) {
-                        var query = new Parse.Query(Parse.Role).equalTo("users", user).find({
-                            success: function (results) {
-                                for (i in results) {
-                                    self.collection.add(results[i]);
-                                }
-                            },
-                            error: function (error) {
-                                notify.addError('Error while fetching users roles')
-                            }
-                        })
-                    }
+            this.user = options.user;
+
+            var query = new Parse.Query(Parse.Role).equalTo("users", self.user).find({
+                success: function (roles) {
+                    _.each(roles, function (role) {
+                        self.collection.add(role);
+                    });
                 },
                 error: function (error) {
-                    notify.addError("Error while fetching user: " + error.code + " " + error.message);
+                    notify.addError('Error while fetching users roles')
                 }
             });
         },
         render: function () {
             var self = this;
-            var roles = [];
-            Parse.Cloud.run('getRoles', {}, {
-                success: function (results) {
-                    for (i in results) {
-                        roles.push(results[i].attributes.name);
-                    }
-                    self.$el.append(self.template({modalClass: modalClass, roles: roles}));
-                    _(self.collection.models).each(function(userRole){
-                        self.$el.find('div.modal' + modalClass).find('table > tbody').appendUserRole(userRole);
-                    }, self);
+            var roles = Parse.Cloud.run('getRoles', {}, {
+                success: function (roles) {
+                    var userRoles = [];
+                    _.each(roles, function (role) {
+                        userRoles.push(role.toJSON().name);
+                    });
+                    self.$el.append(self.template({modalClass: modalClass, roles: userRoles}));
                     self.$el.find('div.modal.' + modalClass).modal('show');
                 },
                 error: function (error) {
@@ -81,43 +69,77 @@ define([
             this.$el.unbind();
         },
         appendUserRole: function (userRole) {
-            this.$el.find('div.modal.' + modalClass).find('table > tbody').append('<tr class="' + userRole.attributes.name + '"></tr>');
-            var userRoleView = new UserRoleView({
-                username: this.username,
-                grid: this,
-                model: userRole,
-                el: this.$el.find('div.modal.' + modalClass).find('table > tbody > tr.' + userRole.attributes.name)
+            var self = this;
+            var query = new Parse.Query(Parse.Role).equalTo('name', userRole.toJSON().name).find({
+                success: function (result) {
+                    var role = result[0];
+                    self.$el.find('div.modal.' + modalClass).find('table > tbody').append('<tr class="' + role.toJSON().name + '"></tr>');
+                    var userRoleView = new UserRoleView({
+                        user: self.user,
+                        grid: self,
+                        model: role,
+                        el: self.$el.find('div.modal.' + modalClass).find('table > tbody > tr.' + role.toJSON().name)
+                    });
+                    userRoleView.render();
+                },
+                error: function () {
+                    notify.addError('Problems with fetching users role!');
+                }
             });
-            userRoleView.render();
         },
         addUserRole: function () {
             this.$el.find('button.add-user-role').addClass('disabled');
             var self = this;
             var role = this.$el.find("select option:selected").text();
-            Parse.Cloud.run(
-                'addChildUser',
-                {
-                    parentName: role,
-                    childUsername: self.username
-                },
-                {
-                    success: function() {
-                        var query = new Parse.Query(Parse.Role).equalTo('name', role).find({
-                            success: function (result) {
-                                self.collection.add(result[0]);
-                                notify.addSuccess('Child user has been added!');
-                            },
-                            error: function () {
-                                notify.addError('Unable to render added role');
-                            }
-                        });
-                        self.$el.find('button.add-user-role').removeClass('disabled');
-                    },
-                    error: function(error) {
-                        notify.addError('Error occured while adding a child user to a role! Message: ' + error.message);
-                    }
+
+            var query = new Parse.Query(Parse.Role).equalTo('name', role).find({
+                success: function (result) {
+                    var parentRole = result[0];
+                    var query = new Parse.Query(Parse.User).equalTo('username', self.user.toJSON().username).find({
+                        success: function (result) {
+                            var childUser = result[0];
+                            parentRole.getUsers().query().find({
+                                success: function (results) {
+                                    for (i in results) {
+                                        if (childUser.toJSON().username === results[i].toJSON().username) {
+                                            var isAdded = true;
+                                        }
+                                    }
+                                    if (isAdded) {
+                                        notify.addError('Role has already been added!');
+                                        self.$el.find('button.add-user-role').removeClass('disabled');
+                                    } else {
+                                        Parse.Cloud.run(
+                                            'addChildUser',
+                                            {
+                                                parentName: role,
+                                                childUsername: self.user.toJSON().username
+                                            },
+                                            {
+                                                success: function () {
+                                                    var query = new Parse.Query(Parse.Role).equalTo('name', role).find({
+                                                        success: function (result) {
+                                                            self.collection.add(result[0]);
+                                                            notify.addSuccess('Child user has been added!');
+                                                        },
+                                                        error: function () {
+                                                            notify.addError('Unable to render added role');
+                                                        }
+                                                    });
+                                                    self.$el.find('button.add-user-role').removeClass('disabled');
+                                                },
+                                                error: function (error) {
+                                                    notify.addError('Error occured while adding a child user to a role! Message: ' + error.message);
+                                                }
+                                            }
+                                        );
+                                    }
+                                }
+                            });
+                        }
+                    });
                 }
-            );
+            });
         }
     });
 });

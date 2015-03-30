@@ -29,7 +29,7 @@ define([
         render: function () {
             var keysArray = [];
             var valuesArray = [];
-            $.map(this.model.attributes, function (values, keys) {
+            $.map(this.model.toJSON(), function (values, keys) {
                 keysArray.push(keys);
                 valuesArray.push(values);
             });

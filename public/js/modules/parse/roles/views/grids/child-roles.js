@@ -54,9 +54,6 @@ define([
                         roles.push(results[i].attributes.name);
                     }
                     self.$el.append(self.template({"roles": roles, modalClass: modalClass}));
-                    _(self.collection.models).each(function(role){
-                        self.find('div.' + modalClass).find('table > tbody').appendRole(role);
-                    }, self);
                     self.$el.find('div.' + modalClass).modal('show');
                 },
                 error: function (error) {

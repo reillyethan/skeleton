@@ -35,7 +35,7 @@ define([
         render: function () {
             var keysArray = [];
             var valuesArray = [];
-            $.map(this.model.attributes, function(values, keys){
+            $.map(this.model.toJSON(), function(values, keys){
                 keysArray.push(keys);
                 valuesArray.push(values);
             });
@@ -54,7 +54,7 @@ define([
             var editedUserFields = [];
             var keysArray = [];
             var valuesArray = [];
-            $.map(this.model.attributes, function(values, keys){
+            $.map(this.model.toJSON(), function(values, keys){
                 keysArray.push(keys);
                 valuesArray.push(values);
             });
@@ -68,7 +68,7 @@ define([
                 editedUserFields.push({key: $(customFieldsKey[i]).val(), value: $(customFieldsValue[i]).val()});
             }
             Parse.Cloud.run('editUser', {
-                username: self.model.attributes.username,
+                username: self.model.toJSON().username,
                 userFields: editedUserFields
             }, {
                 success: function(result) {

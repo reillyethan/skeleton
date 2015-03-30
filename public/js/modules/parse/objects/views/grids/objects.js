@@ -64,10 +64,9 @@ define([
             this.collection.bind('add', this.appendObject);
             var queryObject = new Parse.Query(Object);
             queryObject.find({
-                success: function(results) {
-                    _.each(results, function (item) {
-                        self.collection.add(item);
-
+                success: function(objects) {
+                    _.each(objects, function (object) {
+                        self.collection.add(object);
                     });
                 },
                 error: function(error) {

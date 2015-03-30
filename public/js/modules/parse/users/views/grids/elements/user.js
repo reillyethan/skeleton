@@ -37,36 +37,26 @@ define([
             this.grid = options.grid;
         },
         render: function(){
-            var self = this;
-            var query = new Parse.Query(Parse.User).equalTo("username", this.model.attributes.username).find({
-                success: function (results) {
-                    var user = results[0];
-                    var keysArray = [];
-                    var valuesArray = [];
-
-                    $.map(user.attributes, function (values, keys) {
-                        keysArray.push(keys);
-                        valuesArray.push(values);
-                    });
-                    var authData = null;
-                    if ('undefined' !== typeof(user.attributes.authData) &&
-                        'undefined' !== typeof(user.attributes.authData.facebook)){
-                        authData = user.attributes.authData;
-                    }
-
-                    self.$el.html(self.template({
-                        keys: keysArray,
-                        values: valuesArray,
-                        authData: authData,
-                        user: user
-                    }));
-
-                    return self;
-                },
-                error: function () {
-                    notify.addError('Problems with fetching a specific user!');
-                }
+            var keysArray = [];
+            var valuesArray = [];
+            $.map(this.model.toJSON(), function (values, keys) {
+                keysArray.push(keys);
+                valuesArray.push(values);
             });
+            var authData = null;
+            if ('undefined' !== typeof(this.model.toJSON().authData) &&
+                'undefined' !== typeof(this.model.toJSON().authData.facebook)){
+                authData = this.model.toJSON().authData;
+            }
+
+            this.$el.html(this.template({
+                keys: keysArray,
+                values: valuesArray,
+                authData: authData,
+                user: this.model.toJSON()
+            }));
+
+            return this;
         },
         unrender: function(){
             this.$el.remove();

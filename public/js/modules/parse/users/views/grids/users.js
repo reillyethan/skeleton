@@ -34,29 +34,25 @@ define([
             this.collection.bind('add', this.appendUser);
             var query = new Parse.Query('User');
             query.find({
-                success: function(results) {
-                    for (i in results) {
-                        self.collection.add(results[i].attributes);
-                    }
+                success: function(users) {
+                    _.each(users, function (user) {
+                        self.collection.add(user);
+                    });
                 },
-                error: function(myObject, error) {
+                error: function(error) {
                     notify.addError("Error while fetching users: " + error.code + " " + error.message);
                 }
             });
         },
         render: function () {
             this.$el.append(this.template());
-            var self = this;
-            _(this.collection.models).each(function(user){
-                self.find('table > tbody').appendUser(user);
-            }, this);
         },
         appendUser: function (user) {
-            this.$el.find('table > tbody').append('<tr class="' + user.attributes.username + '"></tr>');
+            this.$el.find('table > tbody').append('<tr class="' + user.toJSON().username + '"></tr>');
             var userView = new UserView({
                 grid: this,
                 model: user,
-                el: this.$el.find('table > tbody > tr.' + user.attributes.username)
+                el: this.$el.find('table > tbody > tr.' + user.toJSON().username)
             });
             userView.render();
         },

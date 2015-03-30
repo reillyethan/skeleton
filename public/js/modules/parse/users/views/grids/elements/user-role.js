@@ -23,7 +23,7 @@ define([
                 'remove'
             );
             this.model.bind('remove', this.unrender);
-            this.username = options.username;
+            this.user = options.user;
         },
         render: function(){
             this.$el.html(this.template({
@@ -43,8 +43,8 @@ define([
                 Parse.Cloud.run(
                     'deleteChildUser',
                     {
-                        parentName: self.model.attributes.name,
-                        childUsername: self.username
+                        parentName: self.model.toJSON().name,
+                        childUsername: self.user.toJSON().username
                     },
                     {
                         success: function() {

@@ -53,7 +53,7 @@ define([
             console.log(valuesArray);
             console.log(this.model.toJSON());
             this.$el.html(this.template({
-                object: this.model,
+                object: this.model.toJSON(),
                 keys: keysArray,
                 values: valuesArray
             }));
