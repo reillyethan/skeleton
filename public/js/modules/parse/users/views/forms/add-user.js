@@ -28,14 +28,19 @@ define([
             this.$el.find('div.modal.' + modalClass).modal('show');
         },
         unrender: function () {
+            this.$el.find('button.create-user').removeClass('disabled');
+            this.collection.remove();
             this.$el.find('div.modal.' + modalClass).remove();
         },
         submitCreate: function () {
             $(".submit").attr("disabled", true);
+
             var self = this;
+
             var username = $('input.username').val();
             var password = $('input.password').val();
             var email = $('input.email').val();
+
             var customFields = [];
             $('div.add-fields-form>ul>li').each(function (counter, element) {
                 var key = $(element).find('div.form-group>input.key').val();
@@ -46,23 +51,32 @@ define([
             });
 
             if (username && password && email) {
-                var user = new Parse.User();
-                user.set("username", username);
-                user.set("password", password);
-                user.set("email", email);
+                var query = new Parse.Query(Parse.User).equalTo("username", username).find({
+                    success: function (results) {
+                        var user = results[0];
+                        if ("undefined" === typeof user) {
+                            user = new Parse.User();
+                            user.set("username", username);
+                            user.set("password", password);
+                            user.set("email", email);
 
-                customFields.forEach(function (field) {
-                    user.set(field.key, field.value);
-                });
+                            customFields.forEach(function (field) {
+                                user.set(field.key, field.value);
+                            });
 
-                user.signUp(null, {
-                    success: function(user) {
-                        self.collection.add(user);
-                        self.$el.find('div.modal.' + modalClass).modal('hide');
-                        notify.addSuccess('User ' + username + ' is successfully created');
-                    },
-                    error: function(user, error) {
-                        notify.addError("Error: " + error.code + " " + error.message);
+                            user.signUp(null, {
+                                success: function(user) {
+                                    self.collection.add(user);
+                                    self.$el.find('div.modal.' + modalClass).modal('hide');
+                                    notify.addSuccess('User ' + username + ' is successfully created');
+                                },
+                                error: function(user, error) {
+                                    notify.addError("Error: " + error.code + " " + error.message);
+                                }
+                            });
+                        } else {
+                            notify.addError('This user is already exists');
+                        }
                     }
                 });
             } else {

@@ -1,0 +1,9 @@
+button.more, button.less, button.for-specific-objects {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+input.objectId, select {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}

@@ -10,17 +10,16 @@ define([
     'modules/parse/roles/views/grids/elements/child-role',
     'modules/parse/roles/collections/role',
     'text!modules/parse/roles/views/templates/grid-child-roles.html',
-    'modules/parse/roles/views/forms/add-child-role',
     'json2',
     'bootstrap'
-], function ($, Backbone, Parse, notify, _, ChildRoleView, RoleCollection, GridChildRolesTemplate, ChildRoleAddView) {
+], function ($, Backbone, Parse, notify, _, ChildRoleView, RoleCollection, GridChildRolesTemplate) {
     var modalClass = "child-roles";
 
-    var ChildRolesGrid = Backbone.View.extend({
+    return Backbone.View.extend({
         template: _.template(GridChildRolesTemplate),
         events: {
-            'hide.bs.modal': 'unrender',
-            'click button.addChildRole': 'addChildRole'
+            'hidden.bs.modal': 'unrender',
+            'click button.add-child-role': 'addChildRole'
         },
         initialize: function(options){
             _.bindAll(
@@ -35,32 +34,43 @@ define([
             this.collection.bind('add', this.appendRole);
             this.parentRole = options.model;
 
-            var query = new Parse.Query(Parse.Role).equalTo('name', options.model.attributes.name).find({
-                success: function(result) {
-                    var parentRole = result[0];
-                    parentRole.getRoles().query().find({
-                        success: function (results) {
-                            for (i in results) {
-                                self.collection.add(results[i]);
-                            }
-                        },
-                        error: function (error) {
-                            notify.addError("Error: " + error.code + " " + error.message);
-                        }
-                    });
+            Parse.Cloud.run('getChildRoles', {parentName: self.parentRole.attributes.name}, {
+                success: function (results) {
+                    for (i in results) {
+                        self.collection.add(results[i]);
+                    }
+                },
+                error: function (error) {
+                    notify.addError('Error occured while adding a child user to a role! Message: ' + error.message);
                 }
             });
         },
         render: function () {
-            this.$el.append(this.template({modalClass: modalClass}));
             var self = this;
-            _(this.collection.models).each(function(role){
-                self.find('div.' + modalClass).find('table > tbody').appendRole(role);
-            }, this);
-            this.$el.find('div.' + modalClass).modal('show');
+            Parse.Cloud.run('getRoles', {}, {
+                success: function (results) {
+                    var roles = [];
+                    for (i in results) {
+                        roles.push(results[i].attributes.name);
+                    }
+                    self.$el.append(self.template({"roles": roles, modalClass: modalClass}));
+                    _(self.collection.models).each(function(role){
+                        self.find('div.' + modalClass).find('table > tbody').appendRole(role);
+                    }, self);
+                    self.$el.find('div.' + modalClass).modal('show');
+                },
+                error: function (error) {
+                    notify.addError("Error while fetching roles: " + error.code + " " + error.message);
+                }
+            });
         },
         unrender: function () {
+            this.$el.find('button.showChildRoles').removeClass('disabled');
+            this.collection.unbind('add', this.appendRole);
+            this.collection.remove();
+            this.parentRole.remove();
             this.$el.find('div.' + modalClass).remove();
+            this.unbind();
         },
         appendRole: function (role) {
             var self = this;
@@ -82,20 +92,64 @@ define([
             });
         },
         addChildRole: function () {
-            var childRoleAddView = new ChildRoleAddView({
-                'parentRole': this.parentRole,
-                'collection': this.collection,
-                'el': 'div.col-lg-9'
-            });
+            var self = this;
+            var childName = this.$el.find("select option:selected").text();
 
-            childRoleAddView.render();
+            var query = new Parse.Query(Parse.Role).equalTo('name', self.parentRole.attributes.name).find({
+                success: function (result) {
+                    var parentRole = result[0];
+                    var query = new Parse.Query(Parse.Role).equalTo('name', childName).find({
+                        success: function (result) {
+                            var childRole = result[0];
+                            parentRole.getRoles().query().find({
+                                success: function (results) {
+                                    for (i in results) {
+                                        if (childRole.attributes.name === results[i].attributes.name) {
+                                            var isAdded = true;
+                                        }
+                                    }
+                                    if (isAdded) {
+                                        notify.addError('Role has already been added!');
+                                    } else {
+                                        Parse.Cloud.run(
+                                            'addChildRole',
+                                            {
+                                                parentName: self.parentRole.attributes.name,
+                                                childName: childName
+                                            },
+                                            {
+                                                success: function() {
+                                                    var query = new Parse.Query(Parse.Role).equalTo('name', childName).find({
+                                                        success: function (result) {
+                                                            self.collection.add(result[0]);
+                                                            notify.addSuccess('Child role has been added!');
+                                                        },
+                                                        error: function () {
+                                                            notify.addError('Unable to render added child role');
+                                                        }
+                                                    });
+                                                },
+                                                error: function(error) {
+                                                    notify.addError('Error occured while adding a child role to a role! Message: ' + error.message);
+                                                }
+                                            }
+                                        );
+                                    }
+                                },
+                                error: function () {
+                                    notify.addError("Problems with fetching child roles!");
+                                }
+                            });
+                        },
+                        error: function () {
+                            notify.addError('Unable to fetch child role you want to add!');
+                        }
+                    });
+                },
+                error: function () {
+                    notify.addError('Unable to check current child roles');
+                }
+            });
         }
     });
-
-    Backbone.pubSub.on('buttonShowChildRolesClicked', function(data) {
-        var childRolesGrid = new ChildRolesGrid({'model': data.model, 'el': 'div.col-lg-9'});
-        childRolesGrid.render();
-    }, this);
-
-    return ChildRolesGrid;
 });

@@ -57,7 +57,7 @@ define([
         render: function () {
             var self = this;
             var roles = [];
-            var query = new Parse.Query(Parse.Role).find({
+            Parse.Cloud.run('getRoles', {}, {
                 success: function (results) {
                     for (i in results) {
                         roles.push(results[i].attributes.name);
@@ -74,11 +74,11 @@ define([
             });
         },
         unrender: function () {
+            this.$el.find('button.edit-roles').removeClass('disabled');
             this.$el.find('div.' + modalClass).remove();
-            this.username.remove();
             this.collection.unbind('add', this.appendUserRole);
             this.collection.remove();
-            this.unbind();
+            this.$el.unbind();
         },
         appendUserRole: function (userRole) {
             this.$el.find('div.modal.' + modalClass).find('table > tbody').append('<tr class="' + userRole.attributes.name + '"></tr>');
@@ -91,6 +91,7 @@ define([
             userRoleView.render();
         },
         addUserRole: function () {
+            this.$el.find('button.add-user-role').addClass('disabled');
             var self = this;
             var role = this.$el.find("select option:selected").text();
             Parse.Cloud.run(
@@ -104,12 +105,13 @@ define([
                         var query = new Parse.Query(Parse.Role).equalTo('name', role).find({
                             success: function (result) {
                                 self.collection.add(result[0]);
+                                notify.addSuccess('Child user has been added!');
                             },
                             error: function () {
                                 notify.addError('Unable to render added role');
                             }
                         });
-                        notify.addSuccess('Child user has been added!');
+                        self.$el.find('button.add-user-role').removeClass('disabled');
                     },
                     error: function(error) {
                         notify.addError('Error occured while adding a child user to a role! Message: ' + error.message);

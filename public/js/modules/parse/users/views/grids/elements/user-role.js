@@ -34,9 +34,8 @@ define([
         },
         unrender: function(){
             this.$el.remove();
-            this.username.remove();
             this.model.unbind('remove', this.unrender);
-            this.unbind();
+            this.$el.unbind();
         },
         remove: function(){
             if (confirm('Are you sure you want to delete that?')) {

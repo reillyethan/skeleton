@@ -36,11 +36,7 @@ define([
             query.find({
                 success: function(results) {
                     for (i in results) {
-                        var user = results[i].attributes;
-                        user['objectId'] = results[i].id;
-                        user['createdAt'] = results[i].createdAt;
-                        user['updatedAt'] = results[i].updatedAt;
-                        self.collection.add(user);
+                        self.collection.add(results[i].attributes);
                     }
                 },
                 error: function(myObject, error) {
@@ -65,6 +61,7 @@ define([
             userView.render();
         },
         createUser: function () {
+            this.$el.find('button.create-user').addClass('disabled');
             var userCreateView = new UserCreateView({'collection': this.collection, 'el': 'div.col-lg-9'});
             userCreateView.render();
         }

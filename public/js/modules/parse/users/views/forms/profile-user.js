@@ -48,9 +48,9 @@ define([
             this.$el.find('div.' + modalClass).modal('show');
         },
         unrender: function () {
+            this.$el.find('button.profile').removeClass('disabled');
             this.$el.find('div.' + modalClass).remove();
-            this.model.remove();
-            this.unbind();
+            this.$el.unbind();
         }
     });
 });

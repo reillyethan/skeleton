@@ -7,7 +7,6 @@ define([
     'underscore',
     'bluz.notify',
     'text!modules/parse/roles/views/templates/child-role.html',
-    'modules/parse/roles/views/grids/child-users',
     'bootstrap',
     'json2'
 ], function (
@@ -15,39 +14,46 @@ define([
     $,
     _,
     notify,
-    ChildRole,
-    GridChildUsersView
+    ChildRole
     ) {
     return Backbone.View.extend({
         template: _.template(ChildRole),
         events: {
-            'click button.remove': 'remove',
-            'click button.showChildRoles': 'showChildRoles',
-            'click button.showChildUsers': 'showChildUsers'
+            'click button.remove': 'remove'
         },
         initialize: function(options){
             _.bindAll(
                 this,
                 'render',
                 'unrender',
-                'remove',
-                'showChildRoles'
+                'remove'
             );
             this.parentRole = options.parentRole;
             this.model.bind('remove', this.unrender);
         },
         render: function(){
-            this.$el.html(this.template({
-                role: this.model.attributes
-            }));
-
-            return this;
+            var self = this;
+            var query = new Parse.Query(Parse.Role).equalTo('name', this.model.attributes.name).find({
+                success: function(result) {
+                    var role = result[0];
+                    if ("undefined" !== typeof role) {
+                        self.$el.html(self.template({
+                            role: self.model,
+                            roleId: role.id
+                        }));
+                        return self;
+                    }
+                }
+            });
         },
         unrender: function(){
+            this.parentRole.remove();
+            this.model.unbind('remove', this.unrender);
             this.$el.remove();
+            this.$el.unbind();
         },
         remove: function(){
-            if (confirm('Are you sure you want to delete that?')) {
+            if (confirm('Are you sure you want to delete this child role?')) {
                 var self = this;
                 Parse.Cloud.run(
                     'deleteChildRole',
@@ -67,13 +73,6 @@ define([
                 );
             }
             return false;
-        },
-        showChildRoles: function () {
-            Backbone.pubSub.trigger('buttonShowChildRolesClicked', {'model': this.model, 'el': 'div.col-lg-9'});
-        },
-        showChildUsers: function () {
-            var gridChildUsersView = new GridChildUsersView({'model': this.model, 'el': 'div.col-lg-9'});
-            gridChildUsersView.render();
         }
     });
 });

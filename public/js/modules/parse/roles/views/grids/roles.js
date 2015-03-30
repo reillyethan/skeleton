@@ -29,14 +29,15 @@ define([
             var self = this;
             this.collection = new RoleCollection();
             this.collection.bind('add', this.appendRole);
-            var query = new Parse.Query(Parse.Role).find({
-                success: function (results) {
+
+            Parse.Cloud.run('getRoles', {}, {
+                success: function(results) {
                     for (i in results) {
                         self.collection.add(results[i]);
                     }
                 },
-                error: function (error) {
-                    notify.addError("Error: " + error.code + " " + error.message);
+                error: function(error) {
+                    notify.addError('Error occured while adding a child user to a role! Message: ' + error.message);
                 }
             });
         },
@@ -56,6 +57,7 @@ define([
             roleView.render();
         },
         createRole: function () {
+            this.$el.find('button.create').addClass('disabled');
             var roleCreateView = new RoleCreateView({'collection': this.collection, 'el': 'div.col-lg-9'});
             roleCreateView.render();
         }

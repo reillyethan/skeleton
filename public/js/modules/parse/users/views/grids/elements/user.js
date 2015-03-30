@@ -8,17 +8,15 @@ define([
     'bluz.notify',
     'modules/parse/users/views/forms/edit-user',
     'text!modules/parse/users/views/templates/user.html',
-    'modules/parse/users/views/forms/reset-password',
     'modules/parse/users/views/forms/profile-user',
     'modules/parse/users/views/grids/user-roles',
     'bootstrap',
     'json2'
-], function (Backbone, $, _, notify, UserEditView, User, UserResetPasswordView, UserProfileView, UserEditRolesView) {
+], function (Backbone, $, _, notify, UserEditView, User, UserProfileView, UserEditRolesView) {
     return Backbone.View.extend({
         template: _.template(User),
         events: {
             'click button.edit': 'edit',
-            'click button.reset-password': 'resetPassword',
             'click button.edit-roles': 'editRoles',
             'click button.remove': 'remove',
             'click button.profile': 'profile'
@@ -30,65 +28,62 @@ define([
                 'unrender',
                 'profile',
                 'edit',
-                'resetPassword',
                 'editRoles',
                 'remove'
             );
+
             this.model.bind('change', this.render);
             this.model.bind('remove', this.unrender);
             this.grid = options.grid;
         },
         render: function(){
-            var keysArray = [];
-            var valuesArray = [];
-            $.map(this.model.attributes, function (values, keys) {
-                keysArray.push(keys);
-                valuesArray.push(values);
+            var self = this;
+            var query = new Parse.Query(Parse.User).equalTo("username", this.model.attributes.username).find({
+                success: function (results) {
+                    var user = results[0];
+                    var keysArray = [];
+                    var valuesArray = [];
+
+                    $.map(user.attributes, function (values, keys) {
+                        keysArray.push(keys);
+                        valuesArray.push(values);
+                    });
+                    var authData = null;
+                    if ('undefined' !== typeof(user.attributes.authData) &&
+                        'undefined' !== typeof(user.attributes.authData.facebook)){
+                        authData = user.attributes.authData;
+                    }
+
+                    self.$el.html(self.template({
+                        keys: keysArray,
+                        values: valuesArray,
+                        authData: authData,
+                        user: user
+                    }));
+
+                    return self;
+                },
+                error: function () {
+                    notify.addError('Problems with fetching a specific user!');
+                }
             });
-            var authData = null;
-            if ('undefined' !== typeof(this.model.attributes.authData) &&
-                'undefined' !== typeof(this.model.attributes.authData.facebook)){
-                authData = this.model.attributes.authData;
-            }
-
-            this.$el.html(this.template({
-                keys: keysArray,
-                values: valuesArray,
-                authData: authData,
-                user: this.model
-            }));
-
-            return this;
         },
         unrender: function(){
             this.$el.remove();
-            this.grid.remove();
             this.model.unbind('change', this.render);
             this.model.unbind('remove', this.unrender);
-            this.unbind();
+            this.$el.unbind();
         },
         edit: function(){
+            this.$el.find('button.edit').addClass('disabled');
             var userEditView = new UserEditView({
                 'model': this.model,
                 'el': 'div.col-lg-9'
             });
             userEditView.render();
         },
-        resetPassword: function(){
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                if (this.model.attributes.username == currentUser.attributes.username) {
-                    var userResetPasswordView = new UserResetPasswordView({'el': 'div.col-lg-9'});
-                    userResetPasswordView.render();
-                } else {
-                    notify.addError('Only user can reset his password!');
-                }
-            } else {
-                notify.addError('Log in!');
-            }
-        },
         remove: function(){
-            if (confirm('Are you sure you want to delete that?')) {
+            if (confirm('Are you sure you want to delete this user?')) {
                 var self = this;
                 Parse.Cloud.run('deleteUser', {username: self.model.attributes.username}, {
                     success: function(result) {
@@ -104,6 +99,7 @@ define([
             return false;
         },
         profile: function () {
+            this.$el.find('button.profile').addClass('disabled');
             var userProfileView = new UserProfileView({
                 'model': this.model,
                 'el': 'div.col-lg-9'
@@ -111,6 +107,7 @@ define([
             userProfileView.render();
         },
         editRoles: function () {
+            this.$el.find('button.edit-roles').addClass('disabled');
             var userEditRolesView = new UserEditRolesView({
                 'user': this.model,
                 'el': 'div.col-lg-9'

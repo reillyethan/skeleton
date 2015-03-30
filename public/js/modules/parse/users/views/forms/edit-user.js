@@ -43,9 +43,9 @@ define([
             this.$el.find('div.modal.' + modalClass).modal('show');
         },
         unrender: function () {
-            this.model.remove();
+            this.$el.find('button.edit').removeClass('disabled');
             this.$el.find('div.modal.' + modalClass).remove();
-            this.unbind();
+            this.$el.unbind();
         },
         submitEdit: function () {
             $(".submit").attr("disabled", true);
@@ -59,7 +59,7 @@ define([
                 valuesArray.push(values);
             });
             for (var i=0; i<keysArray.length; i++) {
-                var input = this.$el.find('div.modal.' + modalClass + ' > div.modal-dialog > div.modal-content > div.modal-body > div.form-group > input.' + keysArray[i]).val();
+                var input = this.$el.find('div.modal.' + modalClass + ' div.form-group > input.' + keysArray[i]).val();
                 editedUserFields.push({key: keysArray[i], value: input});
             }
             var customFieldsKey = this.$el.find('input.custom-fields-key');
@@ -67,7 +67,6 @@ define([
             for (var i=0; i<customFieldsKey.length; i++) {
                 editedUserFields.push({key: $(customFieldsKey[i]).val(), value: $(customFieldsValue[i]).val()});
             }
-            console.log(editedUserFields);
             Parse.Cloud.run('editUser', {
                 username: self.model.attributes.username,
                 userFields: editedUserFields
