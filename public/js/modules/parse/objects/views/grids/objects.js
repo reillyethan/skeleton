@@ -7,7 +7,7 @@ define([
     'parse',
     'bluz.notify',
     'underscore',
-    //'modules/parse/objects/views/grids/elements/object',
+    'modules/parse/objects/views/grids/elements/object',
     //'modules/parse/objects/views/forms/add-object',
     'text!modules/parse/objects/views/templates/grid.html',
     'json2',
@@ -18,61 +18,71 @@ define([
     Parse,
     notify,
     _,
-    //ObjectView,
+    ObjectView,
     //ObjectCreateView,
     GridTemplate) {
     return Backbone.View.extend({
         template: _.template(GridTemplate),
         events: {
             //'click button.create-object': 'createObject'
+            "change .objectClassSelector": "objectClassSelected"
         },
         initialize: function(options){
             _.bindAll(
                 this,
-                'render'
-                //'appendObject',
+                'render',
+                'appendObject'
                 //'createObject'
             );
+        },
+        render: function () {
             var self = this;
-            this.objectClassName = options.objectClassName;
+            $.ajax({
+                url: '/parse-objects/get-objects-list',
+                success: function (data) {
+                    data.push({className: 'Choose Class Name'});
+                    self.$el.append(self.template({objects: data}));
+                    self.$el.find('select').val('Choose Class Name');
+                },
+                error: function () {
+                    notify.addError('Problems while getting objects list');
+                }
+            });
 
-            var Object = Parse.Object.extend(this.objectClassName);
-
-            var ObjectCollection = Backbone.Collection.extend({
+            //_(this.collection.models).each(function(object){
+            //    self.find('table > tbody').appendObject(object);
+            //}, this);
+        },
+        objectClassSelected: function () {
+            var self = this;
+            var selectedObjectClass = this.$el.find('select.objectClassSelector option:selected').text();
+            var Object = Parse.Object.extend(selectedObjectClass);
+            var ObjectCollection = Parse.Collection.extend({
                 model: Object
             });
             this.collection = new ObjectCollection();
-            //this.collection.bind('add', this.appendObject);
-
+            this.collection.bind('add', this.appendObject);
             var queryObject = new Parse.Query(Object);
             queryObject.find({
                 success: function(results) {
-                    for (i in results) {
-                        self.collection.add(results[i]);
-                    }
-                    console.log(self.collection);
+                    _.each(results, function (item) {
+                        self.collection.add(item);
+
+                    });
                 },
-                error: function(myObject, error) {
+                error: function(error) {
                     notify.addError("Error while fetching objects: " + error.code + " " + error.message);
                 }
             });
         },
-        render: function () {
-            this.$el.append(this.template());
-            var self = this;
-            //_(this.collection.models).each(function(object){
-            //    self.find('table > tbody').appendObject(object);
-            //}, this);
+        appendObject: function (object) {
+            this.$el.find('table > tbody').append('<tr></tr>');
+            var objectView = new ObjectView({
+                model: object,
+                el: this.$el.find('table > tbody > tr').last()
+            });
+            objectView.render();
         }
-        //appendObject: function (object) {
-        //    this.$el.find('table > tbody').append('<tr></tr>');
-        //    var objectView = new ObjectView({
-        //        grid: this,
-        //        model: object,
-        //        el: this.$el.find('table > tbody > tr').last()
-        //    });
-        //    objectView.render();
-        //},
         //createObject: function () {
         //    var objectCreateView = new ObjectCreateView({'collection': this.collection, 'el': 'div.col-lg-9'});
         //    objectCreateView.render();
