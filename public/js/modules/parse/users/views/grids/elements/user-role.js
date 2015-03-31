@@ -48,7 +48,7 @@ define([
                     },
                     {
                         success: function() {
-                            self.unrender();
+                            self.model.destroy();
                             notify.addSuccess('Child user removed!');
                         },
                         error: function(error) {

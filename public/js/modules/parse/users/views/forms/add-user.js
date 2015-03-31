@@ -50,7 +50,7 @@ define([
                 }
             });
 
-            if (username && password && email) {
+            if (username && password && email && username.match(/[a-zA-z0-9_-]*/g)[0].length && password.match(/[a-zA-z0-9_-]*/g)[0].length) {
                 var query = new Parse.Query(Parse.User).equalTo("username", username).find({
                     success: function (results) {
                         var user = results[0];
@@ -80,7 +80,7 @@ define([
                     }
                 });
             } else {
-                notify.addError('Not enough fields are filled');
+                notify.addError('Not enough fields are filled or they are not valid. Regex for username: "[a-zA-z0-9_-]*", regex for password: "[a-zA-z0-9_-]*"');
             }
             $(".submit").removeAttr("disabled");
         },

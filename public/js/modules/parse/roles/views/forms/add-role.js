@@ -53,12 +53,14 @@ define([
             this.$el.find('.add-fields-form li.list-group-item').each(function (counter, element) {
                 var objectId = $(element).find('input.objectId').val();
                 var selectedAccessOption = $(element).find("select option:selected").text();
-                if (objectId && selectedAccessOption) {
+                if (objectId && selectedAccessOption && objectId.match(/[a-zA-z0-9]*/g)[0].length) {
                     objects.push({'objectId': objectId, 'option': selectedAccessOption})
+                } else {
+                    notify.addError('You must type valid objectId! Check out the regexp: "[a-zA-z0-9]*"');
                 }
             });
             var publicOption = this.$el.find('div.all-objects select option:selected').text();
-            if (name) {
+            if (name && name.match(/[a-zA-z0-9_-]*/g)[0].length) {
                 var query = new Parse.Query(Parse.Role).equalTo("name", name).find({
                     success: function (results) {
                         var role = results[0];
@@ -114,7 +116,7 @@ define([
                     }
                 });
             } else {
-                notify.addError('At least name should be provided!');
+                notify.addError('At least, valid name should be provided! Regexp: "[a-zA-z0-9_-]*"');
             }
             $(".submit").removeAttr("disabled");
         },

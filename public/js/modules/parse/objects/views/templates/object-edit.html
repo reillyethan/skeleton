@@ -6,23 +6,12 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                <% _.each(keys, function(key, index) { if ('authData' == key) { %>
-                        <div><h5>Facebook Auth Data</h5></div>
-                        <label>Access Token</label>
-                        <input type="text" class="form-control accessToken" value="<%= values[index].facebook.access_token %>"disabled>
-                        <label>Expiration Date</label>
-                        <input type="text" class="expirationDate form-control" value="<%= values[index].facebook.expiration_date %>"disabled>
-                        <label>Facebook Id</label>
-                        <input type="text" class="form-control facebookId" value="<%= values[index].facebook.id %>"disabled>
-                <%  } else { %>
-                    <% if ("objectId"=== keys[index] || "createdAt"=== keys[index] || "updatedAt"=== keys[index]) { %>
-                        <label><%= keys[index] %></label>
-                        <input type="text" class="<%= keys[index] %> form-control" value="<%= values[index] %>" disabled/>
-                    <% } else { %>
-                        <label><%= keys[index] %></label>
-                        <input type="text" class="<%= keys[index] %> form-control" value="<%= values[index] %>"/>
-                    <% } %>
-                <%  }}); %>
+                <% _.each(keys, function(key, index) {  %>
+                <% if ("ACL" !== key) {  %>
+                    <label for="<%= keys[index] %>"><%= keys[index] %></label>
+                    <input type="text" id="<%= keys[index] %>" class="<%= keys[index] %> form-control" value="<%= values[index] %>"/>
+                <%  }
+                }); %>
 
                     <button class="btn btn-warning form-control add-custom-fields"
                             type="button"

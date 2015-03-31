@@ -3,7 +3,7 @@
  */
 
 /**
- * Deletes a user
+ * Deletes an user
  */
 Parse.Cloud.define('deleteUser', function(request, response) {
     Parse.Cloud.useMasterKey();
@@ -243,6 +243,278 @@ Parse.Cloud.define('getRoles', function(request, response) {
         },
         error: function () {
             response.error('Problems with getting roles!');
+        }
+    });
+});
+
+
+/**
+ * Edits an object
+ */
+Parse.Cloud.define('editObject', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var Object = Parse.Object.extend(request.params.objectClassName);
+    var query = new Parse.Query(Object);
+    query.get(request.params.objectId, {
+        success: function(object) {
+            request.params.objectFields.forEach(function (param) {
+                object.set(param.key, param.value);
+            });
+
+            object.save(null, {
+                success: function(object) {
+                    response.success(object);
+                },
+                error: function () {
+                    response.error('Error occured while editing object');
+                }
+            });
+        },
+        error: function(object, error) {
+            response.error('Object has not been found');
+        }
+    });
+});
+
+/**
+ * Deletes an object
+ */
+Parse.Cloud.define('deleteObject', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var Object = Parse.Object.extend(request.params.objectClassName);
+    var query = new Parse.Query(Object);
+    query.get(request.params.objectId, {
+        success: function(object) {
+            object.destroy({
+                success: function() {
+                    response.success('Object deleted');
+                },
+                error: function() {
+                    response.error('Object has not been deleted');
+                }
+            });
+        },
+        error: function(object, error) {
+            response.error('Object has not been found');
+        }
+    });
+});
+
+/**
+ * Adds user to an ACL
+ */
+Parse.Cloud.define('addUserToACL', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var Object = Parse.Object.extend(request.params.objectClassName);
+    var query = new Parse.Query(Object);
+    query.get(request.params.objectId, {
+        success: function(object) {
+            var query = new Parse.Query(Parse.User);
+            query.get(request.params.userId, {
+                success: function (user) {
+                    var newACL = object.getACL();
+                    switch (request.params.selectedRights) {
+                        case 'Read Access':
+                            newACL.setReadAccess(user.toJSON().objectId, true);
+                            break;
+                        case 'Write Access':
+                            newACL.setWriteAccess(user.toJSON().objectId, true);
+                            break;
+                        case 'Both':
+                            newACL.setWriteAccess(user.toJSON().objectId, true);
+                            newACL.setReadAccess(user.toJSON().objectId, true);
+                            break;
+                        default:
+                            break;
+                    }
+                    object.setACL(newACL);
+                    object.save({
+                        success: function () {
+                            response.success('Yahoo');
+                        },
+                        error: function () {
+                            response.error('Dammit');
+                        }
+                    });
+                },
+                error: function (user) {
+                    response.error("User has not been found!");
+                }
+            });
+        },
+        error: function(object, error) {
+            response.error('Object has not been found');
+        }
+    });
+});
+
+/**
+ * Adds role to an ACL
+ */
+Parse.Cloud.define('addRoleToACL', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var Object = Parse.Object.extend(request.params.objectClassName);
+    var query = new Parse.Query(Object);
+    query.get(request.params.objectId, {
+        success: function(object) {
+            var query = new Parse.Query(Parse.Role);
+            query.get(request.params.roleId, {
+                success: function (role) {
+                    var newACL = object.getACL();
+                    switch (request.params.selectedRights) {
+                        case 'Read Access':
+                            newACL.setRoleReadAccess(role.toJSON().name, true);
+                            break;
+                        case 'Write Access':
+                            newACL.setRoleWriteAccess(role.toJSON().name, true);
+                            break;
+                        case 'Both':
+                            newACL.setRoleWriteAccess(role.toJSON().name, true);
+                            newACL.setRoleReadAccess(role.toJSON().name, true);
+                            break;
+                        default:
+                            break;
+                    }
+                    object.setACL(newACL);
+                    object.save({
+                        success: function () {
+                            response.success('Yahoo');
+                        },
+                        error: function () {
+                            response.error('Dammit');
+                        }
+                    });
+                },
+                error: function (user) {
+                    response.error("Role has not been found!");
+                }
+            });
+        },
+        error: function(object, error) {
+            response.error('Object has not been found');
+        }
+    });
+});
+
+/**
+ * Deletes role from an ACL
+ */
+Parse.Cloud.define('deleteRoleFromACL', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var Object = Parse.Object.extend(request.params.parentObjectClassName);
+    var query = new Parse.Query(Object);
+    query.get(request.params.parentObjectId, {
+        success: function(object) {
+            var query = new Parse.Query(Parse.Role);
+            query.get(request.params.roleId, {
+                success: function (role) {
+                    var newACL = object.getACL();
+                    newACL.setRoleWriteAccess(role.toJSON().name, false);
+                    newACL.setRoleReadAccess(role.toJSON().name, false);
+
+                    object.setACL(newACL);
+                    object.save({
+                        success: function () {
+                            response.success('Yahoo');
+                        },
+                        error: function () {
+                            response.error('Dammit');
+                        }
+                    });
+                },
+                error: function () {
+                    response.error("Child role has not been found!");
+                }
+            });
+        },
+        error: function() {
+            response.error('Object has not been found');
+        }
+    });
+});
+
+/**
+ * Deletes user from an ACL
+ */
+Parse.Cloud.define('deleteUserFromACL', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var Object = Parse.Object.extend(request.params.parentObjectClassName);
+    var query = new Parse.Query(Object);
+    query.get(request.params.parentObjectId, {
+        success: function(object) {
+            var query = new Parse.Query(Parse.Role);
+            query.get(request.params.userId, {
+                success: function (user) {
+                    var newACL = object.getACL();
+
+                    newACL.setWriteAccess(user.toJSON().objectId, false);
+                    newACL.setReadAccess(user.toJSON().objectId, false);
+
+                    object.setACL(newACL);
+                    object.save({
+                        success: function () {
+                            response.success('Yahoo');
+                        },
+                        error: function () {
+                            response.error('Dammit');
+                        }
+                    });
+                },
+                error: function () {
+                    response.error("Child role has not been found!");
+                }
+            });
+        },
+        error: function() {
+            response.error('Object has not been found');
+        }
+    });
+});
+
+/**
+ * Sets public rights from an ACL
+ */
+Parse.Cloud.define('setObjectPublicRights', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var Object = Parse.Object.extend(request.params.objectClassName);
+    var query = new Parse.Query(Object);
+    query.get(request.params.objectId, {
+        success: function(object) {
+            var newACL = object.getACL();
+
+            switch (request.params.selectedRights) {
+                case 'Read Access':
+                    newACL.setPublicReadAccess(true);
+                    newACL.setPublicWriteAccess(false);
+                    break;
+                case 'Write Access':
+                    newACL.setPublicWriteAccess(true);
+                    newACL.setPublicReadAccess(false);
+                    break;
+                case 'Both':
+                    newACL.setPublicWriteAccess(true);
+                    newACL.setPublicReadAccess(true);
+                    break;
+                case 'None':
+                    newACL.setPublicWriteAccess(false);
+                    newACL.setPublicReadAccess(false);
+                    break;
+                default:
+                    break;
+            }
+
+            object.setACL(newACL);
+            object.save({
+                success: function () {
+                    response.success('Yahoo');
+                },
+                error: function () {
+                    response.error('Dammit');
+                }
+            });
+        },
+        error: function() {
+            response.error('Object has not been found');
         }
     });
 });

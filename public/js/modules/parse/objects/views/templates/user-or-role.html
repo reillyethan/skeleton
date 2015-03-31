@@ -1,0 +1,15 @@
+<td><%= roleOrUser.objectId %></td>
+<td class="name">
+    <% if (roleOrUser.name) { %>
+    <%= roleOrUser.name %>
+    <% } %>
+    <% if (roleOrUser.username) { %>
+    <%= roleOrUser.username %>
+    <% } %>
+</td>
+<td>
+    <%= roleOrUser.access %>
+</td>
+<td class="blank">
+    <button type="button" class="remove btn btn-danger btn-xs"><i class="fa fa-remove"></i></button>
+</td>

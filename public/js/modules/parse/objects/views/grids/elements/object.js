@@ -6,9 +6,10 @@ define([
     'jquery',
     'underscore',
     'bluz.notify',
-    //'modules/parse/users/views/forms/edit-object',
+    'modules/parse/objects/views/forms/edit-object',
     'text!modules/parse/objects/views/templates/object.html',
-    //'modules/parse/users/views/forms/profile-user',
+    'modules/parse/objects/views/forms/profile-object',
+    'modules/parse/objects/views/forms/edit-acl',
     'bootstrap',
     'json2'
 ], function (
@@ -16,31 +17,30 @@ define([
     $,
     _,
     notify,
-    //UserEditView,
-    Object
-    //ObjectProfileView
+    ObjectEditView,
+    Object,
+    ObjectProfileView,
+    ObjectEditACLView
     ) {
     return Backbone.View.extend({
         template: _.template(Object),
         events: {
-            //'click button.edit': 'edit',
-            //'click button.reset-password': 'resetPassword',
-            //'click button.remove': 'remove',
-            //'click button.profile': 'profile'
-
+            'click button.edit': 'edit',
+            'click button.remove': 'remove',
+            'click button.profile': 'profile',
+            'click button.edit-acl': 'editACL'
         },
         initialize: function(){
             _.bindAll(
                 this,
                 'render',
-                'unrender'
-                //'profile',
-                //'edit',
-                //'resetPassword',
-                //'remove'
+                'unrender',
+                'profile',
+                'edit',
+                'remove'
             );
             this.model.bind('change', this.render);
-            //this.model.bind('remove', this.unrender);
+            this.model.bind('remove', this.unrender);
         },
         render: function(){
             var keysArray = [];
@@ -49,9 +49,6 @@ define([
                 keysArray.push(keys);
                 valuesArray.push(values);
             });
-            console.log(keysArray);
-            console.log(valuesArray);
-            console.log(this.model.toJSON());
             this.$el.html(this.template({
                 object: this.model.toJSON(),
                 keys: keysArray,
@@ -61,51 +58,50 @@ define([
             return this;
         },
         unrender: function(){
+            this.$el.unbind();
             this.$el.remove();
+            this.model.unbind('change', this.render);
+            this.model.unbind('remove', this.unrender);
+        },
+        edit: function(){
+            var objectEditView = new ObjectEditView({
+                'model': this.model,
+                'el': 'div.col-lg-9'
+            });
+            objectEditView.render();
+        },
+        remove: function(){
+            if (confirm('Are you sure you want to delete that?')) {
+                var self = this;
+                Parse.Cloud.run('deleteObject', {
+                    objectClassName: self.model.className,
+                    objectId: self.model.toJSON().objectId
+                }, {
+                    success: function() {
+                        self.model.destroy();
+                        notify.addSuccess('Object has been successfully deleted!');
+                    },
+                    error: function(error) {
+                        notify.addError('Error occured while deleting object! Message: ' + error.message);
+                    }
+                });
+            }
+            return false;
+        },
+        profile: function () {
+            var objectProfileView = new ObjectProfileView({
+                'model': this.model,
+                'el': 'div.col-lg-9'
+            });
+            objectProfileView.render();
+        },
+        editACL: function () {
+            this.$el.find('button.edit-acl').addClass('disabled');
+            var objectEditACLView = new ObjectEditACLView({
+                'object': this.model,
+                'el': 'div.col-lg-9'
+            });
+            objectEditACLView.render();
         }
-        //edit: function(){
-        //    var userEditView = new UserEditView({
-        //        'model': this.model,
-        //        'el': 'div.col-lg-9'
-        //    });
-        //    userEditView.render();
-        //},
-        //resetPassword: function(){
-        //    var currentUser = Parse.User.current();
-        //    if (currentUser) {
-        //        if (this.model.attributes.username == currentUser.attributes.username) {
-        //            var userResetPasswordView = new UserResetPasswordView({'el': 'div.col-lg-9'});
-        //            userResetPasswordView.render();
-        //        } else {
-        //            notify.addError('Only user can reset his password!');
-        //        }
-        //    } else {
-        //        notify.addError('Log in!');
-        //    }
-        //},
-        //remove: function(){
-        //    if (confirm('Are you sure you want to delete that?')) {
-        //        var self = this;
-        //        Parse.Cloud.run('deleteUser', {username: self.model.attributes.username}, {
-        //            success: function(result) {
-        //                self.model.destroy();
-        //                Parse.User.logOut();
-        //                self.grid.updateCurrentUser();
-        //                notify.addSuccess('User has been successfully deleted!');
-        //            },
-        //            error: function(error) {
-        //                notify.addError('Error occured while deleting user! Message: ' + error.message);
-        //            }
-        //        });
-        //    }
-        //    return false;
-        //},
-        //profile: function () {
-        //    var userProfileView = new UserProfileView({
-        //        'model': this.model,
-        //        'el': 'div.col-lg-9'
-        //    });
-        //    userProfileView.render();
-        //}
     });
 });

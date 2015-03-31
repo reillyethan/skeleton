@@ -14,23 +14,9 @@
                         <dt>Facebook ID</dt>
                         <dd><%= authData.facebook.id %></dd>
                     <% } %>
-                    <dt>User ID</dt>
-                    <dd><%= user.id%></dd>
-
-                    <dt>Created At</dt>
-                    <dd><%= user.createdAt%></dd>
-
-                    <dt>Updated At</dt>
-                    <dd><%= user.updatedAt%></dd>
-
-                    <dt>Email</dt>
-                    <dd><%= user.attributes.email %></dd>
-
-                    <dt>Username</dt>
-                    <dd><%= user.attributes.username %></dd>
 
                     <% _.each(keys, function(key, index) {
-                    if (keys[index] != 'authData' && keys[index] != 'email' && keys[index] != 'username') { %>
+                    if (keys[index] != 'authData') { %>
                         <dt><%= keys[index] %></dt>
                         <dd><%= values[index] %></dd>
                     <%  }

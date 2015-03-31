@@ -1,10 +1,6 @@
 <div class="row">
-    <div class="col-md-6">
-        <div class="row">
-            <div class="col-md-2">
-                <button class="create-object btn btn-info" type="button">Create Object</button>
-            </div>
-        </div>
+    <div class="col-md-3">
+        <button class="create-object btn btn-info" type="button">Create Object</button>
     </div>
     <div class="col-md-6">
         <select class="form-control objectClassSelector">
@@ -12,6 +8,9 @@
             <option><%=object.className%></option>
             <%  }); %>
         </select>
+    </div>
+    <div class="col-md-3">
+        <button class="create-new-class btn btn-default" type="button">Create new Class</button>
     </div>
 </div>
 <table class="table table-responsive table-condensed">

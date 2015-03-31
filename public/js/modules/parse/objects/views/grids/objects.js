@@ -8,8 +8,9 @@ define([
     'bluz.notify',
     'underscore',
     'modules/parse/objects/views/grids/elements/object',
-    //'modules/parse/objects/views/forms/add-object',
+    'modules/parse/objects/views/forms/add-object',
     'text!modules/parse/objects/views/templates/grid.html',
+    'modules/parse/objects/views/forms/add-class',
     'json2',
     'bootstrap'
 ], function (
@@ -19,60 +20,69 @@ define([
     notify,
     _,
     ObjectView,
-    //ObjectCreateView,
-    GridTemplate) {
+    ObjectCreateView,
+    GridTemplate,
+    AddClassView
+    ) {
     return Backbone.View.extend({
         template: _.template(GridTemplate),
         events: {
-            //'click button.create-object': 'createObject'
+            'click button.create-object': 'createObject',
+            'click button.create-new-class': 'createNewClass',
             "change .objectClassSelector": "objectClassSelected"
         },
         initialize: function(options){
             _.bindAll(
                 this,
                 'render',
-                'appendObject'
-                //'createObject'
+                'appendObject',
+                'createObject',
+                'createNewClass'
             );
+            this.selectedObjectClass = null;
+            this.comboboxDefaultText = 'Choose Class Name';
         },
         render: function () {
             var self = this;
             $.ajax({
                 url: '/parse-objects/get-objects-list',
                 success: function (data) {
-                    data.push({className: 'Choose Class Name'});
+                    data.push({className: self.comboboxDefaultText});
                     self.$el.append(self.template({objects: data}));
-                    self.$el.find('select').val('Choose Class Name');
+                    self.$el.find('select').val(self.comboboxDefaultText);
                 },
                 error: function () {
                     notify.addError('Problems while getting objects list');
                 }
             });
-
-            //_(this.collection.models).each(function(object){
-            //    self.find('table > tbody').appendObject(object);
-            //}, this);
         },
         objectClassSelected: function () {
             var self = this;
-            var selectedObjectClass = this.$el.find('select.objectClassSelector option:selected').text();
-            var Object = Parse.Object.extend(selectedObjectClass);
-            var ObjectCollection = Parse.Collection.extend({
-                model: Object
-            });
-            this.collection = new ObjectCollection();
-            this.collection.bind('add', this.appendObject);
-            var queryObject = new Parse.Query(Object);
-            queryObject.find({
-                success: function(objects) {
-                    _.each(objects, function (object) {
-                        self.collection.add(object);
-                    });
-                },
-                error: function(error) {
-                    notify.addError("Error while fetching objects: " + error.code + " " + error.message);
-                }
-            });
+
+            if ("undefined" !== typeof this.$el.find('table tbody > tr')) {
+                this.$el.find('table tbody > tr').remove();
+            }
+
+            this.selectedObjectClass = this.$el.find('select.objectClassSelector option:selected').text();
+            if (this.comboboxDefaultText !== this.selectedObjectClass) {
+                var Object = Parse.Object.extend(this.selectedObjectClass);
+                var ObjectCollection = Parse.Collection.extend({
+                    model: Object
+                });
+                this.collection = new ObjectCollection();
+                this.collection.bind('add', this.appendObject);
+                var queryObject = new Parse.Query(Object);
+                queryObject.find({
+                    success: function(objects) {
+                        _.each(objects, function (object) {
+                            self.collection.add(object);
+                        });
+                    },
+                    error: function(error) {
+                        notify.addError("Error while fetching objects: " + error.code + " " + error.message);
+                    }
+                });
+            }
         },
         appendObject: function (object) {
             this.$el.find('table > tbody').append('<tr></tr>');
@@ -81,10 +91,30 @@ define([
                 el: this.$el.find('table > tbody > tr').last()
             });
             objectView.render();
+        },
+        createObject: function () {
+            this.$el.find('button.create-object').addClass('disabled');
+            if (null === this.selectedObjectClass) {
+                notify.addError('At first, choose class!');
+                this.$el.find('button.create-object').removeClass('disabled');
+            } else {
+                var objectCreateView = new ObjectCreateView({
+                    'objectClassName': this.selectedObjectClass,
+                    'collection': this.collection,
+                    'el': 'div.col-lg-9'
+                });
+                objectCreateView.render();
+            }
+        },
+        createNewClass: function () {
+            this.$el.find('button.create-new-class').addClass('disabled');
+
+            var addClassView = new AddClassView({
+                'objectClassName': this.selectedObjectClass,
+                'that': this,
+                'el': 'div.col-lg-9'
+            });
+            addClassView.render();
         }
-        //createObject: function () {
-        //    var objectCreateView = new ObjectCreateView({'collection': this.collection, 'el': 'div.col-lg-9'});
-        //    objectCreateView.render();
-        //}
     });
 });
