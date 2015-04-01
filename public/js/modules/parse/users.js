@@ -29,6 +29,6 @@ define([
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 
-    var gridView = new GridView({'el': 'div.grid'});
+    var gridView = new GridView({'el': 'div.grid', limit: 4});
     gridView.render();
 });
