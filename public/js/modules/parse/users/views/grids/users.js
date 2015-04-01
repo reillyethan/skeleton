@@ -177,11 +177,11 @@ define([
                 });
         },
         appendUser: function (user) {
-            this.$el.find('table > tbody').append('<tr class="' + user.toJSON().username + '"></tr>');
+            this.$el.find('table > tbody').append('<tr class="' + user.toJSON().username.replace(/\s+/g, '') + '"></tr>');
             var userView = new UserView({
                 grid: this,
                 model: user,
-                el: this.$el.find('table > tbody > tr.' + user.toJSON().username)
+                el: this.$el.find('table > tbody > tr.' + user.toJSON().username.replace(/\s+/g, ''))
             });
             userView.render();
         },

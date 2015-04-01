@@ -49,10 +49,11 @@ define([
             }, this);
         },
         appendRole: function (role) {
-            this.$el.find('table > tbody').append('<tr class="' + role.attributes.name + '"></tr>');
+            //var name = role.toJSON().name.replace(/\s+/g, '');
+            this.$el.find('table > tbody').append('<tr class="' + role.toJSON().name.replace(/\s+/g, '') + '"></tr>');
             var roleView = new RoleView({
                 model: role,
-                el: this.$el.find('table > tbody > tr.' + role.attributes.name)
+                el: this.$el.find('table > tbody > tr.' + role.toJSON().name.replace(/\s+/g, ''))
             });
             roleView.render();
         },
