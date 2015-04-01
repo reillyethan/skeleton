@@ -57,10 +57,11 @@ define([
                     if ("undefined" === typeof options || "undefined" === typeof options.objectClass) {
                         self.$el.append(self.template({
                             objects: data,
-                            pages: false,
-                            activePage: false,
-                            previous: false,
-                            next: false
+                            status: false,
+                            pages: 'none',
+                            activePage: 'none',
+                            previous: 'none',
+                            next: 'none'
                         }));
                         self.$el.find('select').val(self.comboboxDefaultText);
                     } else {
@@ -124,6 +125,7 @@ define([
                                     .find({
                                         success: function(objects) {
                                             self.$el.append(self.template({
+                                                status: true,
                                                 objects: data,
                                                 pages: pages,
                                                 activePage: activePage,
@@ -208,7 +210,7 @@ define([
                 this.collection.reset();
                 this.$el.find('div.grid ul > li.active').removeClass('active');
                 this.$el.html('');
-                this.render({activePage: targetPage});
+                this.render({activePage: targetPage, objectClass: this.selectedObjectClass});
             }
         },
         disabled: function () {

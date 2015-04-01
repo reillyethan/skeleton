@@ -24,7 +24,7 @@
     </thead>
     <tbody></tbody>
 </table>
-<% if (!previous || !next || !pages || !activePage)  { %>
+<% if (true==status)  { %>
 <nav>
     <ul class="pagination">
         <li class="previous page <% if (false === previous) { print('disabled'); } %>">
