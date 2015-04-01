@@ -31,7 +31,6 @@ define([
                 'editRoles',
                 'remove'
             );
-
             this.model.bind('change', this.render);
             this.model.bind('remove', this.unrender);
             this.grid = options.grid;

@@ -16,20 +16,3 @@
     </thead>
     <tbody></tbody>
 </table>
-<nav>
-    <ul class="pagination">
-        <li class="previous page <% if (false === previous) { print('disabled'); } %>">
-            <a href="javascript:;" class="<% if (false === previous) { print('disabled'); } %>" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-        <% _.each(pages, function(page) {  %>
-            <li class="page <% if (page.number == activePage) { print('active'); } %>"><a href="javascript:;"><%= page.number %></a></li>
-        <%  }); %>
-        <li class="next page <% if (false === next) { print('disabled'); } %>">
-            <a href="javascript:;" class="<% if (false === next) { print('disabled'); } %>" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-    </ul>
-</nav>
