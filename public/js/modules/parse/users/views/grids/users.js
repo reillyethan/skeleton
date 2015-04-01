@@ -58,10 +58,10 @@ define([
 
             var next = true;
             var previous = true;
-
             var self = this;
             var pages = [];
             var query = new Parse.Query('User');
+
             query
                 .find({
                     success: function (users) {
