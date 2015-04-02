@@ -40,7 +40,8 @@ define([
                 'render',
                 'appendObject',
                 'createObject',
-                'createNewClass'
+                'createNewClass',
+                'objectClassSelected'
             );
             this.selectedObjectClass = null;
             this.comboboxDefaultText = 'Choose Class Name';
@@ -118,7 +119,6 @@ define([
             });
         },
         objectClassSelected: function () {
-            console.log(this);
             if ("undefined" !== typeof this.$el.find('table tbody > tr')) {
                 this.selectedObjectClass = this.$el.find('select.objectClassSelector option:selected').text();
                 this.$el.html('');
