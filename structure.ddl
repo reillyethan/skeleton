@@ -115,6 +115,11 @@ CREATE TABLE users_actions
   expired TIMESTAMP DEFAULT '0000-00-00 00:00:00' NOT NULL,
   PRIMARY KEY ( userId, code )
 );
+CREATE TABLE parse_objects
+(
+  id BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  className VARCHAR(45) NOT NULL
+);
 ALTER TABLE acl_privileges ADD FOREIGN KEY ( roleId ) REFERENCES acl_roles ( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 CREATE UNIQUE INDEX UNIQUE_access ON acl_privileges ( roleId, module, privilege );
 CREATE INDEX FK_roles ON acl_privileges ( roleId );
