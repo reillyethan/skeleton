@@ -85,6 +85,8 @@ define([
                                                 self.$el.append(self.template({objects: data}));
                                                 self.$el.find('select').val(self.comboboxDefaultText);
                                                 self.$el.find('.objectClassSelector').bind('change', self.objectClassSelected);
+                                                self.$el.find('button.create-object').bind('click', self.createObject);
+                                                self.$el.find('button.create-new-class').bind('click', self.createNewClass);
                                                 _.each(objects, function (object) {
                                                     self.collection.add(object);
                                                 });
