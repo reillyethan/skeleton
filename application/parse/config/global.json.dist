@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "_default": {
+            "link": "APPLICATION_NAME"
+        }, 
+        "bluz-parse": {
+            "applicationId": "APP_ID",
+            "masterKey": "MASTER_KEY"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.3.5"
+    }
+}

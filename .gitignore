@@ -8,3 +8,4 @@ nbproject
 composer.lock
 composer.phar
 /vendor/*
+/application/parse/config/*.json
