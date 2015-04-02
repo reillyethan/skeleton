@@ -16,7 +16,7 @@ For more specific information check out official [guide](https://parse.com/docs/
 cp application/parse/config/global.json.dist application/parse/config/global.json
 ```
 
-2. Change _APPLICATION_NAME_, _APP_ID_, _MASTER_KEY_ to your own values  
+2. Change APPLICATION_NAME, APP_ID, MASTER_KEY to your own values  
 
 ## Step 3 (Deploy)
 1. Go to the directory with Cloud Code:  
