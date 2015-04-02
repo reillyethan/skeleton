@@ -136,7 +136,6 @@ define([
         unrender: function(options){
             this.$el.html('');
             this.$el.unbind();
-            console.log('aaaaaaaaaaaaaaaaaaaaa');
             if ("undefined" === typeof this.objectClass) {
                 this.that.render({activePage: options.activePage});
             } else {

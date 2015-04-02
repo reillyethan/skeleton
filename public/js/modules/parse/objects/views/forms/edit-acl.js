@@ -86,7 +86,6 @@ define([
         },
         sumbitACLPublic: function () {
             var selectedRights = this.$el.find('select.publicACL option:selected').text();
-            console.log(this.object.className);
             Parse.Cloud.run('setObjectPublicRights', {
                 objectClassName: this.object.className,
                 selectedRights: selectedRights,

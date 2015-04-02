@@ -59,7 +59,6 @@ define([
                         }));
                         self.$el.find('select').val(self.comboboxDefaultText);
                     } else {
-                        console.log(options.objectClass);
                         var limit = self.limit;
                         var activePage = 1;
                         if ("undefined" !== typeof options.activePage) {
@@ -85,7 +84,6 @@ define([
                                             if (self.$el.find('table > tbody > tr').length === 0) {
                                                 self.$el.append(self.template({objects: data}));
                                                 self.$el.find('select').val(self.comboboxDefaultText);
-                                                console.log(self.$el.find('.objectClassSelector'));
                                                 self.$el.find('.objectClassSelector').bind('change', self.objectClassSelected);
                                                 _.each(objects, function (object) {
                                                     self.collection.add(object);

@@ -70,7 +70,6 @@ define([
             for (var i=0; i<customFieldsKey.length; i++) {
                 editedObjectFields.push({key: $(customFieldsKey[i]).val(), value: $(customFieldsValue[i]).val()});
             }
-            console.log(editedObjectFields);
             Parse.Cloud.run('editObject', {
                 objectClassName: self.model.className,
                 objectId: self.model.toJSON().objectId,
