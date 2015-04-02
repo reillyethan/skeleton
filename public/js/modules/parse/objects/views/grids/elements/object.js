@@ -49,8 +49,29 @@ define([
                 keysArray.push(keys);
                 valuesArray.push(values);
             });
+
+            var object = this.model.toJSON();
+
+            var createdAt = new Date();
+            createdAt.setTime(Date.parse(object['createdAt']));
+            var day = createdAt.getDay();
+            var month = createdAt.getMonth() + 1;
+            var year = createdAt.getFullYear();
+            var hours = createdAt.getHours();
+            var minutes = createdAt.getMinutes();
+            object['createdAt'] = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
+
+            var updatedAt = new Date();
+            updatedAt.setTime(Date.parse(object['updatedAt']));
+            day = updatedAt.getDay();
+            month = updatedAt.getMonth() + 1;
+            year = updatedAt.getFullYear();
+            hours = updatedAt.getHours();
+            minutes = updatedAt.getMinutes();
+            object['updatedAt'] = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
+
             this.$el.html(this.template({
-                object: this.model.toJSON(),
+                object: object,
                 keys: keysArray,
                 values: valuesArray
             }));

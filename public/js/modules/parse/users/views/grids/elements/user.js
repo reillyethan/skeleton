@@ -48,11 +48,32 @@ define([
                 authData = this.model.toJSON().authData;
             }
 
+            var user = this.model.toJSON();
+
+            var createdAt = new Date();
+            createdAt.setTime(Date.parse(user['createdAt']));
+            var day = createdAt.getDay();
+            var month = createdAt.getMonth() + 1;
+            var year = createdAt.getFullYear();
+            var hours = createdAt.getHours();
+            var minutes = createdAt.getMinutes();
+            user['createdAt'] = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
+
+            var updatedAt = new Date();
+            updatedAt.setTime(Date.parse(user['updatedAt']));
+            day = updatedAt.getDay();
+            month = updatedAt.getMonth() + 1;
+            year = updatedAt.getFullYear();
+            hours = updatedAt.getHours();
+            minutes = updatedAt.getMinutes();
+            user['updatedAt'] = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
+
+
             this.$el.html(this.template({
                 keys: keysArray,
                 values: valuesArray,
                 authData: authData,
-                user: this.model.toJSON()
+                user: user
             }));
 
             return this;

@@ -28,3 +28,8 @@ input.key, input.value, input.custom-fields-key, input.custom-fields-value {
     margin-top: 6px;
     margin-bottom: 6px;
 }
+
+div.btn-group.btn-group-xs > button {
+    margin-left:4px;
+    margin-right:4px;
+}

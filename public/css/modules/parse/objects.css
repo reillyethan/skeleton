@@ -2,3 +2,8 @@ button.add-object-user-role, button.publicACL, button.add-custom-fields, button.
     margin-top: 6px;
     margin-bottom: 6px;
 }
+
+div.btn-group.btn-group-xs > button {
+    margin-left:4px;
+    margin-right:4px;
+}
