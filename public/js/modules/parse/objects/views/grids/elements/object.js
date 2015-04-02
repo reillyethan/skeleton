@@ -71,7 +71,7 @@ define([
             object['updatedAt'] = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
 
             this.$el.html(this.template({
-                object: object,
+                object: this.model.toJSON(),
                 keys: keysArray,
                 values: valuesArray
             }));
@@ -110,6 +110,7 @@ define([
             return false;
         },
         profile: function () {
+            this.$el.find('button.profile').addClass('disabled');
             var objectProfileView = new ObjectProfileView({
                 'model': this.model,
                 'el': 'div.col-lg-9'

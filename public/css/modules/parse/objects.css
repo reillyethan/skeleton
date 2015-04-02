@@ -7,3 +7,7 @@ div.btn-group.btn-group-xs > button {
     margin-left:4px;
     margin-right:4px;
 }
+
+th.blank {
+    width: 15%;
+}

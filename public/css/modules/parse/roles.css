@@ -7,3 +7,12 @@ input.objectId, select {
     margin-top: 6px;
     margin-bottom: 6px;
 }
+
+th.blank {
+    width: 5%;
+}
+
+th.roles {
+    align-content: flex-start;
+    width:25%;
+}

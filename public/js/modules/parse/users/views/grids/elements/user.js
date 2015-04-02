@@ -110,6 +110,7 @@ define([
         },
         profile: function () {
             this.$el.find('button.profile').addClass('disabled');
+
             var userProfileView = new UserProfileView({
                 'model': this.model,
                 'el': 'div.col-lg-9'

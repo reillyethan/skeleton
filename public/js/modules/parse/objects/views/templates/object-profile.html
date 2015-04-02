@@ -6,10 +6,18 @@
                 <h4 class="modal-title">Profile</h4>
             </div>
             <div class="modal-body">
-                <dl>
+                <dl class="dl-horizontal">
                     <% _.each(keys, function(key, index) { %>
+                        <% if ("createdAt" === key) { %>
+                            <dt>Created</dt>
+                            <dd><%= object.createdAt %></dd>
+                        <% } else if ("updatedAt" === key) { %>
+                            <dt>Updated</dt>
+                            <dd><%= object.updatedAt %></dd>
+                        <% } else { %>
                         <dt><%= keys[index] %></dt>
                         <dd><%= values[index] %></dd>
+                        <% } %>
                     <% }); %>
                 </dl>
             </div>

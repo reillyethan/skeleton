@@ -38,11 +38,34 @@ define([
                 'undefined' !== typeof(this.model.attributes.authData.facebook)){
                 authData = this.model.attributes.authData;
             }
+
+            var user = this.model.toJSON();
+
+            var createdAt = new Date();
+            createdAt.setTime(Date.parse(user['createdAt']));
+            var day = createdAt.getDay();
+            var month = createdAt.getMonth() + 1;
+            var year = createdAt.getFullYear();
+            var hours = createdAt.getHours();
+            var minutes = createdAt.getMinutes();
+            user['createdAt'] = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
+
+            var updatedAt = new Date();
+            updatedAt.setTime(Date.parse(user['updatedAt']));
+            day = updatedAt.getDay();
+            month = updatedAt.getMonth() + 1;
+            year = updatedAt.getFullYear();
+            hours = updatedAt.getHours();
+            minutes = updatedAt.getMinutes();
+            user['updatedAt'] = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
+
+            console.log(user);
+
             this.$el.append(this.template({
                 keys: keysArray,
                 values: valuesArray,
                 authData: authData,
-                user: this.model,
+                user: user,
                 modalClass: modalClass
             }));
             this.$el.find('div.' + modalClass).modal('show');

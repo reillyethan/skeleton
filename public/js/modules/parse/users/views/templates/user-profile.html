@@ -6,7 +6,7 @@
                 <h4 class="modal-title">Profile</h4>
             </div>
             <div class="modal-body">
-                <dl>
+                <dl class="dl-horizontal">
                     <% if (authData) { %>
                         <dt>Access token</dt>
                         <dd><%= authData.facebook.access_token %></dd>
@@ -18,8 +18,16 @@
 
                     <% _.each(keys, function(key, index) {
                     if (keys[index] != 'authData') { %>
-                        <dt><%= keys[index] %></dt>
-                        <dd><%= values[index] %></dd>
+                        <% if ("createdAt" === key) { %>
+                            <dt>Created</dt>
+                            <dd><%= user.createdAt %></dd>
+                        <% } else if ("updatedAt" === key) { %>
+                            <dt>Updated</dt>
+                            <dd><%= user.updatedAt %></dd>
+                        <% } else { %>
+                            <dt><%= keys[index] %></dt>
+                            <dd><%= values[index] %></dd>
+                        <% } %>
                     <%  }
                     }); %>
                 </dl>
