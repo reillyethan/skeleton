@@ -32,19 +32,11 @@ define([
             this.model.bind('remove', this.unrender);
         },
         render: function(){
-            var self = this;
-            var query = new Parse.Query(Parse.Role).equalTo('name', this.model.attributes.name).find({
-                success: function(result) {
-                    var role = result[0];
-                    if ("undefined" !== typeof role) {
-                        self.$el.html(self.template({
-                            role: self.model,
-                            roleId: role.id
-                        }));
-                        return self;
-                    }
-                }
-            });
+            this.$el.html(this.template({
+                role: this.model,
+                roleId: this.model.toJSON().objectId
+            }));
+            return this;
         },
         unrender: function(){
             this.parentRole.remove();

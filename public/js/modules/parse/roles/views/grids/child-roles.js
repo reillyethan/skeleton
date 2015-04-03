@@ -71,80 +71,51 @@ define([
         },
         appendRole: function (role) {
             var self = this;
-            var query = new Parse.Query(Parse.Role).equalTo('name', self.parentRole.attributes.name).find({
-                success: function(result) {
-                    var parentRole = result[0];
-                    var query = new Parse.Query(Parse.Role).equalTo('name',role.attributes.name).find({
-                        success: function (result) {
-                            self.$el.find('div.' + modalClass).find('table > tbody').append('<tr class="' + result[0].attributes.name + '"></tr>');
-                            var childRoleView = new ChildRoleView({
-                                parentRole: parentRole,
-                                model: result[0],
-                                el: self.$el.find('div.' + modalClass).find('table > tbody > tr.' + result[0].attributes.name)
-                            });
-                            childRoleView.render();
-                        }
-                    });
-                }
+            self.$el.find('div.' + modalClass).find('table > tbody').append('<tr class="' + role.toJSON().name + '"></tr>');
+            var childRoleView = new ChildRoleView({
+                parentRole: self.parentRole,
+                model: role,
+                el: self.$el.find('div.' + modalClass).find('table > tbody > tr.' + role.toJSON().name)
             });
+            childRoleView.render();
         },
         addChildRole: function () {
             var self = this;
             var childName = this.$el.find("select option:selected").text();
 
-            var roles = Parse.Cloud.run('getRole', {'name': self.parentRole.attributes.name}, {
-                success: function (parentRole) {
-                    var query = Parse.Cloud.run('getRole', {'name': childName}, {
-                        success: function (childRole) {
-                            var childRoles = Parse.Cloud.run('getChildRoles', {'parentName': parentRole.toJSON().name}, {
-                                success: function (childRoles) {
-                                    for (i in childRoles) {
-                                        if (childRole.attributes.name === childRoles[i].attributes.name) {
-                                            var isAdded = true;
-                                        }
-                                    }
-                                    if (isAdded) {
-                                        notify.addError('Role has already been added!');
-                                    } else {
-                                        Parse.Cloud.run(
-                                            'addChildRole',
-                                            {
-                                                parentName: self.parentRole.toJSON().name,
-                                                childName: childName
-                                            },
-                                            {
-                                                success: function() {
-                                                    var query = new Parse.Query(Parse.Role).equalTo('name', childName).find({
-                                                        success: function (result) {
-                                                            self.collection.add(result[0]);
-                                                            notify.addSuccess('Child role has been added!');
-                                                        },
-                                                        error: function () {
-                                                            notify.addError('Unable to render added child role');
-                                                        }
-                                                    });
-                                                },
-                                                error: function(error) {
-                                                    notify.addError('Error occured while adding a child role to a role! Message: ' + error.message);
-                                                }
-                                            }
-                                        );
-                                    }
-                                },
-                                error: function () {
-                                    notify.addError("Problems with fetching child roles!");
-                                }
-                            });
-                        },
-                        error: function () {
-                            notify.addError('Unable to fetch child role you want to add!');
+            var childRoles = Parse.Cloud.run('getChildRoles', {'parentName': self.parentRole.toJSON().name}, {
+                success: function (childRoles) {
+                    for (i in childRoles) {
+                        if (childName === childRoles[i].toJSON().name) {
+                            var isAdded = true;
                         }
-                    });
+                    }
+                    if (isAdded) {
+                        notify.addError('Role has already been added!');
+                    } else {
+                        Parse.Cloud.run(
+                            'addChildRole',
+                            {
+                                parentName: self.parentRole.toJSON().name,
+                                childName: childName
+                            },
+                            {
+                                success: function(childRole) {
+                                    self.collection.add(childRole);
+                                    notify.addSuccess('Child role has been added!');
+                                },
+                                error: function(error) {
+                                    notify.addError('Error occured while adding a child role to a role! Message: ' + error.message);
+                                }
+                            }
+                        );
+                    }
                 },
                 error: function () {
-                    notify.addError('Unable to check current child roles');
+                    notify.addError("Problems with fetching child roles!");
                 }
             });
+
         }
     });
 });

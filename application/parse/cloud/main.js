@@ -95,7 +95,7 @@ Parse.Cloud.define('addChildRole', function(request, response) {
                     parentRole.getRoles().add(childRole);
                     parentRole.save({
                         success: function () {
-                            response.success('Child role added to a parent role!');
+                            response.success(childRole);
                         },
                         error: function (error) {
                             response.error('Error occured while adding child role to a parent role!');
