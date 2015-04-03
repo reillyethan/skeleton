@@ -30,9 +30,8 @@ define([
         },
         render: function(){
             var self = this;
-            var query = new Parse.Query(Parse.Role).equalTo('name', this.model.attributes.name).find({
-                success: function(result) {
-                    var role = result[0];
+            var roles = Parse.Cloud.run('getRole', {name: this.model.toJSON().name}, {
+                success: function (role) {
                     if ("undefined" !== typeof role) {
                         self.$el.html(self.template({
                             role: self.model,

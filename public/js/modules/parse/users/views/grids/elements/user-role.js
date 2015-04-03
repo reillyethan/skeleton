@@ -12,22 +12,16 @@ define([
 ], function (Backbone, $, _, notify, UserRoleView) {
     return Backbone.View.extend({
         template: _.template(UserRoleView),
-        events: {
-            'click button.remove': 'remove'
-        },
         initialize: function(options){
             _.bindAll(
                 this,
                 'render',
-                'unrender',
-                'remove'
+                'unrender'
             );
-            this.model.bind('remove', this.unrender);
-            this.user = options.user;
         },
         render: function(){
-            this.$el.html(this.template({
-                role: this.model
+            this.$el.append(this.template({
+                role: this.model.toJSON()
             }));
 
             return this;
@@ -40,22 +34,7 @@ define([
         remove: function(){
             if (confirm('Are you sure you want to delete that?')) {
                 var self = this;
-                Parse.Cloud.run(
-                    'deleteChildUser',
-                    {
-                        parentName: self.model.toJSON().name,
-                        childUsername: self.user.toJSON().username
-                    },
-                    {
-                        success: function() {
-                            self.model.destroy();
-                            notify.addSuccess('Child user removed!');
-                        },
-                        error: function(error) {
-                            notify.addError('Error occured while deleting a child user from role! Message: ' + error.message);
-                        }
-                    }
-                );
+
             }
             return false;
         }

@@ -518,3 +518,62 @@ Parse.Cloud.define('setObjectPublicRights', function(request, response) {
         }
     });
 });
+
+/**
+ * Fetches single role
+ */
+Parse.Cloud.define('getRole', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var query = new Parse.Query(Parse.Role).equalTo('name', request.params.name).find({
+        success: function(results) {
+            response.success(results[0]);
+        },
+        error: function () {
+            response.error('Problems with getting roles!');
+        }
+    });
+});
+
+
+/**
+ * Fetches user's roles
+ */
+Parse.Cloud.define('getUserRoles', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var query = new Parse.Query(Parse.User).equalTo("username", request.params.username).find({
+        success: function (results) {
+            var user = results[0];
+            var query = new Parse.Query(Parse.Role).equalTo("users", user).find({
+                success: function (allRoles) {
+                    response.success(allRoles);
+                },
+                error: function (error) {
+                    response.error('Error while fetching users roles');
+                }
+            });
+        }
+    });
+});
+
+/**
+ * Fetches All Child Users
+ */
+Parse.Cloud.define('getChildUsers', function(request, response) {
+    Parse.Cloud.useMasterKey();
+    var query = new Parse.Query(Parse.Role).equalTo('name', request.params.parentName).find({
+        success: function(result) {
+            var parentRole = result[0];
+            parentRole.getUsers().query().find({
+                success: function (results) {
+                    response.success(results);
+                },
+                error: function (error) {
+                    response.error("Problems with fetching child roles!");
+                }
+            });
+        },
+        error: function () {
+            response.error('Problems with getting parent role!');
+        }
+    });
+});

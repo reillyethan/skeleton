@@ -53,10 +53,12 @@ define([
             this.$el.find('.add-fields-form li.list-group-item').each(function (counter, element) {
                 var objectId = $(element).find('input.objectId').val();
                 var selectedAccessOption = $(element).find("select option:selected").text();
-                if (objectId && selectedAccessOption && objectId.match(/[a-zA-z0-9]*/g)[0].length) {
-                    objects.push({'objectId': objectId, 'option': selectedAccessOption})
-                } else {
-                    notify.addError('You must type valid objectId! Check out the regexp: "[a-zA-z0-9]*"');
+                if (objectId.length) {
+                    if (objectId && selectedAccessOption && objectId.match(/[a-zA-z0-9]*/g)[0].length) {
+                        objects.push({'objectId': objectId, 'option': selectedAccessOption})
+                    } else {
+                        notify.addError('You must type valid objectId! Check out the regexp: "[a-zA-z0-9]*"');
+                    }
                 }
             });
             var publicOption = this.$el.find('div.all-objects select option:selected').text();
@@ -85,13 +87,13 @@ define([
                                 });
                             }
                             switch (publicOption) {
-                                case 'Write Access':
+                                case 'write':
                                     roleACL.setPublicWriteAccess(true);
                                     break;
-                                case 'Read Access':
+                                case 'read':
                                     roleACL.setPublicReadAccess(true);
                                     break;
-                                case 'Both':
+                                case 'both':
                                     roleACL.setPublicWriteAccess(true);
                                     roleACL.setPublicReadAccess(true);
                                     break;
