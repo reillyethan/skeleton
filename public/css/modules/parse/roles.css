@@ -9,10 +9,11 @@ input.objectId, select {
 }
 
 th.blank {
-    width: 5%;
+    align-content: flex-start;
+    width: 10%;
 }
 
-th.roles {
-    align-content: flex-start;
-    width:25%;
+div.btn-group.btn-group-xs > button{
+    margin-left: 6px;
+    margin-right: 6px;
 }

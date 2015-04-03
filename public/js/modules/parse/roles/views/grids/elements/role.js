@@ -29,18 +29,10 @@ define([
             this.model.bind('remove', this.unrender);
         },
         render: function(){
-            var self = this;
-            var roles = Parse.Cloud.run('getRole', {name: this.model.toJSON().name}, {
-                success: function (role) {
-                    if ("undefined" !== typeof role) {
-                        self.$el.html(self.template({
-                            role: self.model,
-                            roleId: role.id
-                        }));
-                        return self;
-                    }
-                }
-            });
+            this.$el.html(this.template({
+                role: this.model.toJSON()
+            }));
+            return this;
         },
         unrender: function(){
             this.model.unbind('change', this.render);

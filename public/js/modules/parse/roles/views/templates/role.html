@@ -1,4 +1,8 @@
-<td class="objectId"><%= roleId %></td>
-<td class="name"><%= role.attributes.name %></td>
-<td class="role-roles"><button class="btn btn-primary showChildRoles">Show child roles</button></td>
-<td class="blank"><button type="button" class="remove btn btn-danger btn-xs"><i class="fa fa-remove"></i></button></td>
+<td class="objectId"><%= role.objectId %></td>
+<td class="name"><%= role.name %></td>
+<td class="blank">
+    <div class="btn-group btn-group-xs">
+    <button class="btn btn-default showChildRoles btn-xs"><i class="fa fa-lock"></i></button>
+    <button type="button" class="remove btn btn-danger btn-xs"><i class="fa fa-remove"></i></button>
+    </div>
+</td>

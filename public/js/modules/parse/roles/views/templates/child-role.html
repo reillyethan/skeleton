@@ -1,3 +1,6 @@
-<td class="objectId"><%= roleId %></td>
-<td class="name"><%= role.attributes.name %></td>
-<td class="blank"><button type="button" class="remove btn btn-danger btn-xs"><i class="fa fa-remove"></i></button></td>
+<div class="form-group input-group">
+    <span class="input-group-addon">
+        <input type="checkbox" class="<%=role.name%>" <% if (true==role.checked) {print('checked');} %>>
+    </span>
+    <label class="form-control"><%=role.name%></label>
+</div>

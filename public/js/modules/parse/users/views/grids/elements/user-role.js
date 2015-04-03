@@ -28,15 +28,7 @@ define([
         },
         unrender: function(){
             this.$el.remove();
-            this.model.unbind('remove', this.unrender);
             this.$el.unbind();
-        },
-        remove: function(){
-            if (confirm('Are you sure you want to delete that?')) {
-                var self = this;
-
-            }
-            return false;
         }
     });
 });

@@ -31,10 +31,10 @@ define([
             this.collection.bind('add', this.appendRole);
 
             Parse.Cloud.run('getRoles', {}, {
-                success: function(results) {
-                    for (i in results) {
-                        self.collection.add(results[i]);
-                    }
+                success: function(roles) {
+                    _.each(roles, function (role) {
+                        self.collection.add(role);
+                    });
                 },
                 error: function(error) {
                     notify.addError('Error occured while adding a child user to a role! Message: ' + error.message);
@@ -49,7 +49,6 @@ define([
             }, this);
         },
         appendRole: function (role) {
-            //var name = role.toJSON().name.replace(/\s+/g, '');
             this.$el.find('table > tbody').append('<tr class="' + role.toJSON().name.replace(/\s+/g, '') + '"></tr>');
             var roleView = new RoleView({
                 model: role,
