@@ -92,16 +92,14 @@ define([
             var self = this;
             var childName = this.$el.find("select option:selected").text();
 
-            var query = new Parse.Query(Parse.Role).equalTo('name', self.parentRole.attributes.name).find({
-                success: function (result) {
-                    var parentRole = result[0];
-                    var query = new Parse.Query(Parse.Role).equalTo('name', childName).find({
-                        success: function (result) {
-                            var childRole = result[0];
-                            parentRole.getRoles().query().find({
-                                success: function (results) {
-                                    for (i in results) {
-                                        if (childRole.attributes.name === results[i].attributes.name) {
+            var roles = Parse.Cloud.run('getRole', {'name': self.parentRole.attributes.name}, {
+                success: function (parentRole) {
+                    var query = Parse.Cloud.run('getRole', {'name': childName}, {
+                        success: function (childRole) {
+                            var childRoles = Parse.Cloud.run('getChildRoles', {'parentName': parentRole.toJSON().name}, {
+                                success: function (childRoles) {
+                                    for (i in childRoles) {
+                                        if (childRole.attributes.name === childRoles[i].attributes.name) {
                                             var isAdded = true;
                                         }
                                     }
@@ -111,7 +109,7 @@ define([
                                         Parse.Cloud.run(
                                             'addChildRole',
                                             {
-                                                parentName: self.parentRole.attributes.name,
+                                                parentName: self.parentRole.toJSON().name,
                                                 childName: childName
                                             },
                                             {
