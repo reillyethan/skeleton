@@ -1,18 +1,20 @@
-<div class="row">
-    <div class="col-md-3">
-        <button class="create-object btn btn-info" type="button">Create Object</button>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="row">
+        <div class="col-md-3">
+            <button class="create-object btn btn-primary navbar-btn" type="button">Create Object</button>
+        </div>
+        <div class="col-md-6 navbar-btn">
+            <select class="form-control objectClassSelector">
+                <% _.each(objects, function(object, index) { %>
+                <option><%=object.className%></option>
+                <%  }); %>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button class="create-new-class btn btn-default navbar-btn" type="button">Create new Class</button>
+        </div>
     </div>
-    <div class="col-md-6">
-        <select class="form-control objectClassSelector">
-            <% _.each(objects, function(object, index) { %>
-            <option><%=object.className%></option>
-            <%  }); %>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <button class="create-new-class btn btn-default" type="button">Create new Class</button>
-    </div>
-</div>
+</nav>
 <table class="table table-responsive table-condensed">
     <thead>
     <tr>

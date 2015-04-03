@@ -11,3 +11,8 @@ div.btn-group.btn-group-xs > button {
 th.blank {
     width: 15%;
 }
+
+.navbar-default {
+    padding-left: 10px;
+    padding-right: 10px;
+}

@@ -17,3 +17,8 @@ div.btn-group.btn-group-xs > button{
     margin-left: 6px;
     margin-right: 6px;
 }
+
+.navbar-default {
+    padding-left: 10px;
+    padding-right: 10px;
+}
