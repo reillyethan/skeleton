@@ -1,5 +1,27 @@
 <nav class="navbar navbar-default" role="navigation">
-    <button class="create-user btn btn-primary navbar-btn" type="button">Create User</button>
+    <div class="row">
+        <div class="col-md-2">
+            <button class="create-user btn btn-primary navbar-btn" type="button">Create User</button>
+        </div>
+        <div class="col-md-10 navbar-form">
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        Fields <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="javascript:;">username</a></li>
+                        <li><a href="javascript:;">email</a></li>
+                        <li><a href="javascript:;">objectId</a></li>
+                    </ul>
+                </div>
+                <input type="text" class="form-control search-input">
+                <div class="input-group-btn">
+                    <button class="btn btn-default search"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
 </nav>
 <table class="table table-responsive table-condensed">
     <thead>

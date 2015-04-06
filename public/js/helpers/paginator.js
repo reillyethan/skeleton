@@ -7,10 +7,12 @@ define([
     'underscore',
     'bluz.notify',
     'text!helpers/templates/paginator.html',
+    'modules/parse/users/views/grids/users',
+    'helpers/event-manager',
     'bootstrap',
     'json2'
-], function (Backbone, $, _, notify, PaginatorTemplate) {
-    return Backbone.View.extend({
+], function (Backbone, $, _, notify, PaginatorTemplate, GridView) {
+    var Paginator = Backbone.View.extend({
         template: _.template(PaginatorTemplate),
         events: {
             'click li.page': 'pageChanged',
@@ -134,12 +136,25 @@ define([
             return this;
         },
         unrender: function(options){
-            this.$el.html('');
+            this.$el.remove();
+            this.that.remove();
             this.$el.unbind();
+            this.that.$el.unbind();
             if ("undefined" === typeof this.objectClass) {
-                this.that.render({activePage: options.activePage});
+                $('div.col-lg-9').append('<div class=grid></div>');
+                Backbone.pubSub.trigger('createUsersGrid', {
+                    el: 'div.grid',
+                    limit: 4,
+                    activePage: options.activePage
+                });
             } else {
-                this.that.render({activePage: options.activePage, objectClass: this.objectClass});
+                $('div.col-lg-9').append('<div class=grid></div>');
+                Backbone.pubSub.trigger('createObjectsGrid', {
+                    el: 'div.grid',
+                    limit: 4,
+                    activePage: options.activePage,
+                    objectClass: this.objectClass
+                });
             }
         },
         pageChanged: function (event) {
@@ -164,4 +179,17 @@ define([
             return false;
         }
     });
+
+    Backbone.pubSub.on('createPaginator', function (options) {
+        $(options.el).append(new Paginator({
+            collection: options.collection,
+            el: options.el,
+            that: options.that,
+            limit: options.limit,
+            objects: options.objects,
+            activePage: options.activePage
+        }).render().el);
+    }, this);
+
+    return Paginator;
 });

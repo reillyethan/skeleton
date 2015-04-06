@@ -12,6 +12,7 @@ define([
     'modules/parse/users/views/forms/add-user',
     'text!modules/parse/users/views/templates/grid.html',
     'helpers/paginator',
+    'helpers/event-manager',
     'json2',
     'bootstrap'
 ], function (
@@ -23,28 +24,33 @@ define([
     UserView,
     UserCollection,
     UserCreateView,
-    GridTemplate,
-    Paginator
+    GridTemplate
     ) {
-    return Backbone.View.extend({
+    var UsersGrid = Backbone.View.extend({
         template: _.template(GridTemplate),
         limit: 6,
         events: {
-            'click button.fb-login': 'fbLogin',
-            'click button.login': 'login',
             'click button.create-user': 'createUser',
-            'click button.logout': 'logout'
+            'click ul.dropdown-menu>li': 'selectField',
+            'click button.search': 'search'
         },
         initialize: function(options){
             _.bindAll(
                 this,
                 'render',
                 'appendUser',
-                'createUser'
+                'createUser',
+                'selectField',
+                'search'
             );
+            this.selectedField = 'Fields';
             this.limit = options.limit;
             this.collection = new UserCollection();
             this.collection.bind('add', this.appendUser);
+        },
+        unrender: function () {
+            //this.$el.unbind();
+            //this.$el.remove();
         },
         render: function (options) {
             var self = this;
@@ -68,14 +74,15 @@ define([
                                 _.each(users, function (user) {
                                     self.collection.add(user);
                                 });
-                                self.$el.append(new Paginator({
+
+                                Backbone.pubSub.trigger('createPaginator', {
                                     collection: self.collection,
                                     el: 'div.grid',
                                     that: self,
                                     limit: limit,
                                     objects: allUsers,
                                     activePage: activePage
-                                }).render().el);
+                                });
                             },
                             error: function(error) {
                                 notify.addError("Error while fetching page: " + error.code + " " + error.message);
@@ -100,6 +107,75 @@ define([
             this.$el.find('button.create-user').addClass('disabled');
             var userCreateView = new UserCreateView({'collection': this.collection, 'el': 'div.col-lg-9'});
             userCreateView.render();
+        },
+        selectField: function (event) {
+            this.selectedField = $(event.target).text();
+            this.$el.find('button.dropdown-toggle').html(this.selectedField + ' <span class="caret"></span>');
+        },
+        search: function () {
+            var self = this;
+            var query = new Parse.Query(Parse.User);
+            switch (this.selectedField) {
+                case 'username':
+                    var username = this.$el.find('.search-input').val();
+                    if (username) {
+                        query.equalTo('username', username).find({
+                            success: function(result) {
+                                var user = result[0];
+                                if ("undefined" !== typeof user) {
+                                    self.$el.find('tbody').html('');
+                                    self.appendUser(user);
+                                } else {
+                                    notify.addNotice('No user found with such username!');
+                                }
+                            }
+                        });
+                    }
+                    break;
+                case 'email':
+                    var email= this.$el.find('.search-input').val();
+                    if (email) {
+                        query.equalTo('email', email).find({
+                            success: function(result) {
+                                var user = result[0];
+                                if ("undefined" !== typeof user) {
+                                    self.$el.find('tbody').html('');
+                                    self.appendUser(user);
+                                } else {
+                                    notify.addNotice('No user found with such username!');
+                                }
+                            }
+                        });
+                    }
+                    break;
+                case 'objectId':
+                    var objectId= this.$el.find('.search-input').val();
+                    if (objectId) {
+                        query.get(objectId, {
+                            success: function(user) {
+                                if ("undefined" !== typeof user) {
+                                    self.$el.find('tbody').html('');
+                                    self.appendUser(user);
+                                } else {
+                                    notify.addNotice('No user found with such objectId!');
+                                }
+                            }
+                        });
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     });
+
+    Backbone.pubSub.on('createUsersGrid', function (options) {
+        console.log(options.activePage);
+        new UsersGrid({
+            el: options.el,
+            limit: 4
+        }).render({activePage: options.activePage});
+    }, this);
+
+    return UsersGrid;
 });

@@ -26,7 +26,7 @@ define([
     AddClassView,
     Paginator
     ) {
-    return Backbone.View.extend({
+    var ObjectsGrid = Backbone.View.extend({
         template: _.template(GridTemplate),
         limit: 6,
         events: {
@@ -162,4 +162,14 @@ define([
             addClassView.render();
         }
     });
+
+    Backbone.pubSub.on('createObjectsGrid', function (options) {
+        console.log(options.activePage);
+        new ObjectsGrid({
+            el: options.el,
+            limit: 4
+        }).render({activePage: options.activePage, objectClass: options.objectClass});
+    }, this);
+
+    return ObjectsGrid;
 });
