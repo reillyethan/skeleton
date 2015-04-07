@@ -1,16 +1,32 @@
 <nav class="navbar navbar-default" role="navigation">
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             <button class="create-object btn btn-primary navbar-btn" type="button">Create Object</button>
         </div>
-        <div class="col-md-6 navbar-btn">
+        <div class="col-md-4 navbar-form">
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        Fields <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="javascript:;">objectId</a></li>
+                    </ul>
+                </div>
+                <input type="text" class="form-control search-input">
+                <div class="input-group-btn">
+                    <button class="btn btn-default search"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 navbar-btn">
             <select class="form-control objectClassSelector">
                 <% _.each(objects, function(object, index) { %>
                 <option><%=object.className%></option>
                 <%  }); %>
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <button class="create-new-class btn btn-default navbar-btn" type="button">Create new Class</button>
         </div>
     </div>

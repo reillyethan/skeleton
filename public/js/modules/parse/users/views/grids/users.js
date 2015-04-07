@@ -170,7 +170,6 @@ define([
     });
 
     Backbone.pubSub.on('createUsersGrid', function (options) {
-        console.log(options.activePage);
         new UsersGrid({
             el: options.el,
             limit: 4

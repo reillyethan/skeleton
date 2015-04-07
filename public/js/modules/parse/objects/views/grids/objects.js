@@ -32,7 +32,9 @@ define([
         events: {
             'click button.create-object': 'createObject',
             'click button.create-new-class': 'createNewClass',
-            "change .objectClassSelector": "objectClassSelected"
+            "change .objectClassSelector": "objectClassSelected",
+            'click ul.dropdown-menu>li': 'selectField',
+            'click button.search': 'search'
         },
         initialize: function(options){
             _.bindAll(
@@ -41,7 +43,9 @@ define([
                 'appendObject',
                 'createObject',
                 'createNewClass',
-                'objectClassSelected'
+                'objectClassSelected',
+                'selectField',
+                'search'
             );
             this.selectedObjectClass = null;
             this.comboboxDefaultText = 'Choose Class Name';
@@ -63,6 +67,7 @@ define([
                         var activePage = 1;
                         if ("undefined" !== typeof options.activePage) {
                             activePage = parseInt(options.activePage);
+                            self.activePage = activePage;
                         }
                         var offset = (activePage - 1) * limit;
 
@@ -72,6 +77,7 @@ define([
                         });
                         self.collection = new ObjectCollection();
                         self.collection.bind('add', self.appendObject);
+
                         var queryObject = new Parse.Query(Object);
                         queryObject.find({
                             success: function(objects) {
@@ -83,10 +89,7 @@ define([
                                         success: function(objects) {
                                             if (self.$el.find('table > tbody > tr').length === 0) {
                                                 self.$el.append(self.template({objects: data}));
-                                                self.$el.find('select').val(self.comboboxDefaultText);
-                                                self.$el.find('.objectClassSelector').bind('change', self.objectClassSelected);
-                                                self.$el.find('button.create-object').bind('click', self.createObject);
-                                                self.$el.find('button.create-new-class').bind('click', self.createNewClass);
+                                                self.$el.find('select').val(options.objectClass);
                                                 _.each(objects, function (object) {
                                                     self.collection.add(object);
                                                 });
@@ -121,11 +124,21 @@ define([
         objectClassSelected: function () {
             if ("undefined" !== typeof this.$el.find('table tbody > tr')) {
                 this.selectedObjectClass = this.$el.find('select.objectClassSelector option:selected').text();
-                this.$el.html('');
-                this.$el.unbind();
-
                 if (this.comboboxDefaultText !== this.selectedObjectClass) {
-                    this.render({objectClass: this.selectedObjectClass});
+                    if ("undefined" !== typeof self.activePage) {
+                        Backbone.pubSub.trigger('objectClassSelected', {
+                            objectClass: this.selectedObjectClass,
+                            el: 'div.grid',
+                            activePage: this.activePage,
+                            that: this
+                        });
+                    } else {
+                        Backbone.pubSub.trigger('objectClassSelected', {
+                            objectClass: this.selectedObjectClass,
+                            el: 'div.grid',
+                            that: this
+                        });
+                    }
                 }
             }
         },
@@ -160,6 +173,40 @@ define([
                 'el': 'div.col-lg-9'
             });
             addClassView.render();
+        },
+        selectField: function (event) {
+            this.selectedField = $(event.target).text();
+            this.$el.find('button.dropdown-toggle').html(this.selectedField + ' <span class="caret"></span>');
+        },
+        search: function () {
+            this.selectedObjectClass = this.$el.find('select.objectClassSelector option:selected').text();
+            if ("undefined" === typeof this.selectedObjectClass) {
+                notify.addError('At first, choose class!');
+                this.$el.find('button.create-object').removeClass('disabled');
+            } else {
+                var self = this;
+                var Object = Parse.Object.extend(this.selectedObjectClass);
+                var queryObject = new Parse.Query(Object);
+                switch (this.selectedField) {
+                    case 'objectId':
+                        var objectId = this.$el.find('.search-input').val();
+                        if (objectId) {
+                            queryObject.get(objectId, {
+                                success: function (object) {
+                                    if ("undefined" !== typeof object) {
+                                        self.$el.find('tbody').html('');
+                                        self.appendObject(object);
+                                    } else {
+                                        notify.addNotice('No user found with such objectId!');
+                                    }
+                                }
+                            });
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     });
 
@@ -169,6 +216,26 @@ define([
             el: options.el,
             limit: 4
         }).render({activePage: options.activePage, objectClass: options.objectClass});
+    }, this);
+
+    Backbone.pubSub.on('objectClassSelected', function (options) {
+        var el = options.el;
+        var objectClass = options.objectClass;
+        var activePage = options.activePage;
+        options.that.$el.remove();
+        options.that.$el.unbind();
+        $('div.col-lg-9').append('<div class=grid></div>');
+        if ("undefined" !== typeof options.activePage) {
+            new ObjectsGrid({
+                el: el,
+                limit: 4
+            }).render({activePage: activePage, objectClass: objectClass});
+        } else {
+            new ObjectsGrid({
+                el: el,
+                limit: 4
+            }).render({objectClass: objectClass});
+        }
     }, this);
 
     return ObjectsGrid;
