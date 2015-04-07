@@ -110,6 +110,12 @@ define([
         },
         selectField: function (event) {
             this.selectedField = $(event.target).text();
+            if ("created" == this.selectedField && !this.$el.find('input.search-input').hasClass('datepicker')) {
+                this.$el.find('input.search-input').addClass('datepicker');
+            } else if (this.$el.find('input.search-input').hasClass('datepicker')) {
+                this.$el.find('input.search-input').removeClass('datepicker')
+            }
+            
             this.$el.find('button.dropdown-toggle').html(this.selectedField + ' <span class="caret"></span>');
         },
         search: function () {
@@ -162,6 +168,8 @@ define([
                             }
                         });
                     }
+                    break;
+                case 'created':
                     break;
                 default:
                     break;
