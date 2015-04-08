@@ -10,6 +10,7 @@ require.config({
     //urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
         "bootstrap": './bootstrap',
+        "bootstrap-datepicker": './bootstrap-datepicker',
         "jquery": './vendor/jquery',
         "jquery-ui": './vendor/jquery-ui',
         "redactor": './../redactor/redactor',
@@ -25,6 +26,10 @@ require.config({
         "bootstrap": {
             deps: ['jquery'],
             exports: '$.fn.popover'
+        },
+        "bootstrap-datepicker": {
+            deps: ['jquery', 'bootstrap'],
+            exports: '$.fn.datepicker'
         },
         "redactor": {
             deps: ['jquery'],

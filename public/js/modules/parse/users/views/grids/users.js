@@ -14,7 +14,8 @@ define([
     'helpers/paginator',
     'helpers/event-manager',
     'json2',
-    'bootstrap'
+    'bootstrap',
+    'bootstrap-datepicker'
 ], function (
     $,
     Backbone,
@@ -32,7 +33,8 @@ define([
         events: {
             'click button.create-user': 'createUser',
             'click ul.dropdown-menu>li': 'selectField',
-            'click button.search': 'search'
+            'click button.search': 'search',
+            'click input.datepicker': 'pickTheDate'
         },
         initialize: function(options){
             _.bindAll(
@@ -41,7 +43,8 @@ define([
                 'appendUser',
                 'createUser',
                 'selectField',
-                'search'
+                'search',
+                'pickTheDate'
             );
             this.selectedField = 'Fields';
             this.limit = options.limit;
@@ -113,7 +116,11 @@ define([
             if ("created" == this.selectedField && !this.$el.find('input.search-input').hasClass('datepicker')) {
                 this.$el.find('input.search-input').addClass('datepicker');
             } else if (this.$el.find('input.search-input').hasClass('datepicker')) {
-                this.$el.find('input.search-input').removeClass('datepicker')
+                this.$el.find('input.search-input').removeClass('datepicker');
+                this.$el.find('input.search-input').datepicker('remove');
+            }
+            if (this.$el.find('input.search-input').hasClass('shown')) {
+                this.$el.find('input.search-input').removeClass('shown');
             }
             
             this.$el.find('button.dropdown-toggle').html(this.selectedField + ' <span class="caret"></span>');
@@ -148,7 +155,7 @@ define([
                                     self.$el.find('tbody').html('');
                                     self.appendUser(user);
                                 } else {
-                                    notify.addNotice('No user found with such username!');
+                                    notify.addNotice('No user found with such email!');
                                 }
                             }
                         });
@@ -170,12 +177,60 @@ define([
                     }
                     break;
                 case 'created':
+                    var date = this.$el.find('.search-input').val();
+                    if (date) {
+                        var searchDateStart = new Date(date);
+                        searchDateStart.setHours(0);
+                        searchDateStart.setMinutes(0);
+                        var dateGreater = searchDateStart.toISOString();
+
+                        var greaterThan = {"__type": "Date", "iso": dateGreater};
+                        var searchDateFinish = new Date(date);
+                        searchDateFinish.setHours(23);
+                        searchDateFinish.setMinutes(59);
+                        var dateLess = searchDateFinish.toISOString();
+
+                        var lessThan = {"__type": "Date", "iso": dateLess};
+
+                        console.log(greaterThan);
+                        console.log(lessThan);
+
+                        query
+                            .greaterThanOrEqualTo('created', greaterThan)
+                            .lessThanOrEqualTo('created', lessThan)
+                            .find({
+                            success: function(result) {
+                                console.log(result);
+                                if (result.length > 1) {
+                                    self.$el.find('tbody').html('');
+                                    _.each(result, function (user) {
+                                        self.appendUser(user);
+                                    });
+                                } else {
+                                    notify.addNotice('No user found with such date on created!');
+                                }
+                            }
+                        });
+                    }
                     break;
                 default:
                     break;
             }
+        },
+        pickTheDate: function () {
+            if ($('input.datepicker').length) {
+                if ($('input.datepicker').hasClass('shown')) {
+                    $('input.datepicker').removeClass('shown');
+                    $('input.datepicker').datepicker('hide');
+                    $('input.datepicker').datepicker('remove');
+                } else {
+                    $('input.datepicker').datepicker('show');
+                    $('input.datepicker').addClass('shown');
+                }
+            }
         }
     });
+
 
     Backbone.pubSub.on('createUsersGrid', function (options) {
         new UsersGrid({
