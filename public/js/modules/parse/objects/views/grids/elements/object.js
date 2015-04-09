@@ -54,7 +54,7 @@ define([
 
             var createdAt = new Date();
             createdAt.setTime(Date.parse(object['createdAt']));
-            var day = createdAt.getDay();
+            var day = createdAt.getDay() + 1;
             var month = createdAt.getMonth() + 1;
             var year = createdAt.getFullYear();
             var hours = createdAt.getHours();
@@ -63,7 +63,7 @@ define([
 
             var updatedAt = new Date();
             updatedAt.setTime(Date.parse(object['updatedAt']));
-            day = updatedAt.getDay();
+            day = updatedAt.getDay() + 1;
             month = updatedAt.getMonth() + 1;
             year = updatedAt.getFullYear();
             hours = updatedAt.getHours();
@@ -71,7 +71,7 @@ define([
             object['updatedAt'] = day + '.' + month + '.' + year + ' ' + hours + ':' + minutes;
 
             this.$el.html(this.template({
-                object: this.model.toJSON(),
+                object: object,
                 keys: keysArray,
                 values: valuesArray
             }));

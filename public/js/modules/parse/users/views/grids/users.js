@@ -113,7 +113,8 @@ define([
         },
         selectField: function (event) {
             this.selectedField = $(event.target).text();
-            if ("created" == this.selectedField && !this.$el.find('input.search-input').hasClass('datepicker')) {
+            if (("created" == this.selectedField || "updated" == this.selectedField ) &&
+                !this.$el.find('input.search-input').hasClass('datepicker')) {
                 this.$el.find('input.search-input').addClass('datepicker');
             } else if (this.$el.find('input.search-input').hasClass('datepicker')) {
                 this.$el.find('input.search-input').removeClass('datepicker');
@@ -180,27 +181,17 @@ define([
                     var date = this.$el.find('.search-input').val();
                     if (date) {
                         var searchDateStart = new Date(date);
-                        searchDateStart.setHours(0);
-                        searchDateStart.setMinutes(0);
+                        searchDateStart.setHours(0, -searchDateStart.getTimezoneOffset(), 0, 0);
                         var dateGreater = searchDateStart.toISOString();
-
-                        var greaterThan = {"__type": "Date", "iso": dateGreater};
                         var searchDateFinish = new Date(date);
-                        searchDateFinish.setHours(23);
-                        searchDateFinish.setMinutes(59);
+                        searchDateFinish.setHours(23, -searchDateStart.getTimezoneOffset()+59, 59, 999);
                         var dateLess = searchDateFinish.toISOString();
 
-                        var lessThan = {"__type": "Date", "iso": dateLess};
-
-                        console.log(greaterThan);
-                        console.log(lessThan);
-
                         query
-                            .greaterThanOrEqualTo('created', greaterThan)
-                            .lessThanOrEqualTo('created', lessThan)
+                            .greaterThanOrEqualTo('createdAt', dateGreater)
+                            .lessThanOrEqualTo('createdAt', dateLess)
                             .find({
                             success: function(result) {
-                                console.log(result);
                                 if (result.length > 1) {
                                     self.$el.find('tbody').html('');
                                     _.each(result, function (user) {
@@ -211,6 +202,33 @@ define([
                                 }
                             }
                         });
+                    }
+                    break;
+                case 'updated':
+                    var date = this.$el.find('.search-input').val();
+                    if (date) {
+                        var searchDateStart = new Date(date);
+                        searchDateStart.setHours(0, -searchDateStart.getTimezoneOffset(), 0, 0);
+                        var dateGreater = searchDateStart.toISOString();
+                        var searchDateFinish = new Date(date);
+                        searchDateFinish.setHours(23, -searchDateStart.getTimezoneOffset()+59, 59, 999);
+                        var dateLess = searchDateFinish.toISOString();
+
+                        query
+                            .greaterThanOrEqualTo('updatedAt', dateGreater)
+                            .lessThanOrEqualTo('updatedAt', dateLess)
+                            .find({
+                                success: function(result) {
+                                    if ("undefined" !== typeof result[0]) {
+                                        self.$el.find('tbody').html('');
+                                        _.each(result, function (user) {
+                                            self.appendUser(user);
+                                        });
+                                    } else {
+                                        notify.addNotice('No user found with such date on updated!');
+                                    }
+                                }
+                            });
                     }
                     break;
                 default:
