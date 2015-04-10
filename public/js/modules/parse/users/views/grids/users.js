@@ -40,6 +40,7 @@ define([
             _.bindAll(
                 this,
                 'render',
+                'unrender',
                 'appendUser',
                 'createUser',
                 'selectField',
@@ -52,50 +53,72 @@ define([
             this.collection.bind('add', this.appendUser);
         },
         unrender: function () {
-            //this.$el.unbind();
-            //this.$el.remove();
+            this.$el.unbind();
+            this.$el.remove();
         },
         render: function (options) {
             var self = this;
             var query = new Parse.Query('User');
-            query.find({
-                success: function (users) {
-                    var allUsers = users;
 
-                    var limit = self.limit;
-                    var activePage = 1;
-                    if ("undefined" !== typeof options && "undefined" !== typeof options.activePage) {
-                        activePage = parseInt(options.activePage);
+            var limit = self.limit;
+            var activePage = 1;
+            if ("undefined" !== typeof options && "undefined" !== typeof options.activePage) {
+                activePage = parseInt(options.activePage);
+            }
+            var offset = (activePage - 1) * limit;
+
+            if ("undefined" !== typeof options && "undefined" !== typeof options.search) {
+                var users = options.search;
+                self.$el.append(self.template());
+                for (var i = offset; i < users.length + offset; i++) {
+                    if (i===limit) {
+                        break;
+                    } else {
+                        self.collection.add(users[i]);
                     }
-                    var offset = (activePage - 1) * limit;
-                    query
-                        .limit(limit)
-                        .skip(offset)
-                        .find({
-                            success: function(users) {
-                                self.$el.append(self.template());
-                                _.each(users, function (user) {
-                                    self.collection.add(user);
-                                });
-
-                                Backbone.pubSub.trigger('createPaginator', {
-                                    collection: self.collection,
-                                    el: 'div.grid',
-                                    that: self,
-                                    limit: limit,
-                                    objects: allUsers,
-                                    activePage: activePage
-                                });
-                            },
-                            error: function(error) {
-                                notify.addError("Error while fetching page: " + error.code + " " + error.message);
-                            }
-                        });
-                },
-                error: function (error) {
-                    notify.addError("Error while fetching users: " + error.code + " " + error.message);
                 }
-            });
+
+                Backbone.pubSub.trigger('createPaginator', {
+                    collection: self.collection,
+                    el: 'div.grid',
+                    that: self,
+                    limit: limit,
+                    objects: users,
+                    activePage: activePage
+                });
+            } else {
+                query.find({
+                    success: function (users) {
+                        var allUsers = users;
+                        query
+                            .limit(limit)
+                            .skip(offset)
+                            .find({
+                                success: function(users) {
+                                    self.$el.append(self.template());
+                                    _.each(users, function (user) {
+                                        self.collection.add(user);
+                                    });
+
+                                    Backbone.pubSub.trigger('createPaginator', {
+                                        collection: self.collection,
+                                        el: 'div.grid',
+                                        that: self,
+                                        limit: limit,
+                                        objects: allUsers,
+                                        activePage: activePage
+                                    });
+                                },
+                                error: function(error) {
+                                    notify.addError("Error while fetching page: " + error.code + " " + error.message);
+                                }
+                            });
+                    },
+                    error: function (error) {
+                        notify.addError("Error while fetching users: " + error.code + " " + error.message);
+                    }
+                });
+            }
         },
         appendUser: function (user) {
             this.$el.find('table > tbody').append('<tr class="' + user.toJSON().username.replace(/\s+/g, '') + '"></tr>');
@@ -137,8 +160,12 @@ define([
                             success: function(result) {
                                 var user = result[0];
                                 if ("undefined" !== typeof user) {
-                                    self.$el.find('tbody').html('');
-                                    self.appendUser(user);
+                                    self.unrender();
+                                    $('div.col-lg-9').append('<div class=grid></div>');
+                                    Backbone.pubSub.trigger('createUsersGrid', {
+                                        el: 'div.grid',
+                                        search: [user]
+                                    });
                                 } else {
                                     notify.addNotice('No user found with such username!');
                                 }
@@ -153,8 +180,12 @@ define([
                             success: function(result) {
                                 var user = result[0];
                                 if ("undefined" !== typeof user) {
-                                    self.$el.find('tbody').html('');
-                                    self.appendUser(user);
+                                    self.unrender();
+                                    $('div.col-lg-9').append('<div class=grid></div>');
+                                    Backbone.pubSub.trigger('createUsersGrid', {
+                                        el: 'div.grid',
+                                        search: [user]
+                                    });
                                 } else {
                                     notify.addNotice('No user found with such email!');
                                 }
@@ -168,8 +199,12 @@ define([
                         query.get(objectId, {
                             success: function(user) {
                                 if ("undefined" !== typeof user) {
-                                    self.$el.find('tbody').html('');
-                                    self.appendUser(user);
+                                    self.unrender();
+                                    $('div.col-lg-9').append('<div class=grid></div>');
+                                    Backbone.pubSub.trigger('createUsersGrid', {
+                                        el: 'div.grid',
+                                        search: [user]
+                                    });
                                 } else {
                                     notify.addNotice('No user found with such objectId!');
                                 }
@@ -193,9 +228,11 @@ define([
                             .find({
                             success: function(result) {
                                 if (result.length > 1) {
-                                    self.$el.find('tbody').html('');
-                                    _.each(result, function (user) {
-                                        self.appendUser(user);
+                                    self.unrender();
+                                    $('div.col-lg-9').append('<div class=grid></div>');
+                                    Backbone.pubSub.trigger('createUsersGrid', {
+                                        el: 'div.grid',
+                                        search: result
                                     });
                                 } else {
                                     notify.addNotice('No user found with such date on created!');
@@ -220,9 +257,11 @@ define([
                             .find({
                                 success: function(result) {
                                     if ("undefined" !== typeof result[0]) {
-                                        self.$el.find('tbody').html('');
-                                        _.each(result, function (user) {
-                                            self.appendUser(user);
+                                        self.unrender();
+                                        $('div.col-lg-9').append('<div class=grid></div>');
+                                        Backbone.pubSub.trigger('createUsersGrid', {
+                                            el: 'div.grid',
+                                            search: result
                                         });
                                     } else {
                                         notify.addNotice('No user found with such date on updated!');
@@ -251,10 +290,17 @@ define([
 
 
     Backbone.pubSub.on('createUsersGrid', function (options) {
-        new UsersGrid({
-            el: options.el,
-            limit: 4
-        }).render({activePage: options.activePage});
+        if ("undefined"!==options.search) {
+            new UsersGrid({
+                el: options.el,
+                limit: 4
+            }).render({activePage: options.activePage, search: options.search});
+        } else {
+            new UsersGrid({
+                el: options.el,
+                limit: 4
+            }).render({activePage: options.activePage});
+        }
     }, this);
 
     return UsersGrid;
